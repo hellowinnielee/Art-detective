@@ -71,6 +71,7 @@ type UndoDeleteState = {
 };
 
 const SNAPSHOT_CACHE_KEY = "art_detective_snapshot_cache_v1";
+const WATCHLIST_CACHE_KEY_PREFIX = "art_detective_watchlist_";
 
 function formatArtistName(input: string): string {
   return input
@@ -192,6 +193,59 @@ function normalizeListingUrl(raw: string): string {
   return `https://${trimmed}`;
 }
 
+function watchlistCacheKey(email: string): string {
+  return `${WATCHLIST_CACHE_KEY_PREFIX}${email.trim().toLowerCase()}`;
+}
+
+function mergeWatchlistItems(primary: WatchlistItem[], secondary: WatchlistItem[]): WatchlistItem[] {
+  const merged: WatchlistItem[] = [];
+  const seenListingIds = new Set<string>();
+  const seenUrls = new Set<string>();
+
+  for (const item of [...primary, ...secondary]) {
+    const listingId = item.listingId?.trim();
+    const urlKey = normalizeUrlKey(item.url);
+    if (!listingId || !urlKey) continue;
+    if (seenListingIds.has(listingId) || seenUrls.has(urlKey)) continue;
+    seenListingIds.add(listingId);
+    seenUrls.add(urlKey);
+    merged.push(item);
+  }
+
+  return merged;
+}
+
+function readWatchlistCache(email: string): WatchlistItem[] {
+  if (typeof window === "undefined") return [];
+  const key = watchlistCacheKey(email);
+  if (!key) return [];
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is WatchlistItem => {
+      return (
+        Boolean(item) &&
+        typeof item === "object" &&
+        typeof (item as WatchlistItem).listingId === "string" &&
+        typeof (item as WatchlistItem).url === "string" &&
+        typeof (item as WatchlistItem).source === "string" &&
+        typeof (item as WatchlistItem).title === "string"
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function writeWatchlistCache(email: string, items: WatchlistItem[]) {
+  if (typeof window === "undefined") return;
+  const key = watchlistCacheKey(email);
+  if (!key) return;
+  window.localStorage.setItem(key, JSON.stringify(items));
+}
+
 function TabIcon({ tab }: { tab: Tab }) {
   if (tab === "Discover") {
     return (
@@ -250,7 +304,8 @@ export default function Home() {
     if (session) {
       setAuthed(true);
       setEmail(session.email);
-      refreshAll().catch((err) => handleApiError(err));
+      setWatchlist(readWatchlistCache(session.email));
+      refreshAll(session.email).catch((err) => handleApiError(err));
     }
     // Intentionally run only once on first load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -281,6 +336,11 @@ export default function Home() {
     const key = `art_detective_profile_${email.trim().toLowerCase()}`;
     window.localStorage.setItem(key, JSON.stringify({ firstName, lastName }));
   }, [authed, email, firstName, lastName]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !authed) return;
+    writeWatchlistCache(email, watchlist);
+  }, [authed, email, watchlist]);
 
   useEffect(() => {
     if (!undoDelete) return;
@@ -339,13 +399,16 @@ export default function Home() {
     setDiscoverItems(data.items);
   }
 
-  async function refreshSaved() {
+  async function refreshSaved(cacheEmail = email) {
     const w = await apiRequest<{ items: WatchlistItem[] }>("/api/watchlist");
-    setWatchlist(w.items);
+    const cached = readWatchlistCache(cacheEmail);
+    const merged = mergeWatchlistItems(w.items, cached);
+    setWatchlist(merged);
+    writeWatchlistCache(cacheEmail, merged);
   }
 
-  async function refreshAll() {
-    await Promise.all([refreshFollowing(), refreshDiscover(), refreshSaved()]);
+  async function refreshAll(cacheEmail = email) {
+    await Promise.all([refreshFollowing(), refreshDiscover(), refreshSaved(cacheEmail)]);
   }
 
   function handleApiError(err: unknown) {
@@ -374,9 +437,11 @@ export default function Home() {
         method: "POST",
         body: JSON.stringify({ email }),
       });
+      setEmail(data.user.email);
+      setWatchlist(readWatchlistCache(data.user.email));
       saveSession(data.tokens.accessToken, data.tokens.refreshToken, data.user.email);
       setAuthed(true);
-      await refreshAll();
+      await refreshAll(data.user.email);
     } catch (err) {
       handleApiError(err);
     }
