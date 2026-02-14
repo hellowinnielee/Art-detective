@@ -555,7 +555,7 @@ export default function Home() {
     <main className="frameRoot">
       <div className="phoneFrame">
         <div className="content">
-          <h1>Art Detective</h1>
+          <h1 className="appTitle">Art Detective</h1>
 
           {!authed ? (
             <form className="card" onSubmit={login}>

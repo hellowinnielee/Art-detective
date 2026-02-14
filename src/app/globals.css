@@ -95,7 +95,12 @@ body {
 
 h1 {
   font-size: 28px;
+  font-weight: 700;
   margin: 0;
+}
+
+.appTitle {
+  font-weight: 700 !important;
 }
 
 h2 {
