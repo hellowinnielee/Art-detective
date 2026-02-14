@@ -180,6 +180,12 @@ function getCachedSnapshot(url: string): CachedSnapshotRecord | null {
   return cache[key] ?? null;
 }
 
+function readCachedSnapshotForListingUrl(rawUrl: string): CachedSnapshotRecord | null {
+  const normalized = normalizeListingUrl(rawUrl);
+  if (!normalized) return null;
+  return getCachedSnapshot(normalized);
+}
+
 function formatCachedTime(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "unknown time";
@@ -343,6 +349,15 @@ export default function Home() {
   }, [authed, email, watchlist]);
 
   useEffect(() => {
+    if (!authed) return;
+    if (!url.trim() || snapshot || loadingSnapshot) return;
+    const cached = readCachedSnapshotForListingUrl(url);
+    if (!cached) return;
+    setSnapshot(cached.snapshot);
+    setCachedSnapshotAt(cached.savedAt);
+  }, [authed, url, snapshot, loadingSnapshot]);
+
+  useEffect(() => {
     if (!undoDelete) return;
     const remaining = new Date(undoDelete.undoExpiresAt).getTime() - Date.now();
     if (remaining <= 0) {
@@ -439,6 +454,11 @@ export default function Home() {
       });
       setEmail(data.user.email);
       setWatchlist(readWatchlistCache(data.user.email));
+      const cached = readCachedSnapshotForListingUrl(url);
+      if (cached) {
+        setSnapshot(cached.snapshot);
+        setCachedSnapshotAt(cached.savedAt);
+      }
       saveSession(data.tokens.accessToken, data.tokens.refreshToken, data.user.email);
       setAuthed(true);
       await refreshAll(data.user.email);
