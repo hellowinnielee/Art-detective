@@ -27,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Runs on `http://localhost:3001` by default.
+Open `http://localhost:3001/` in your browser.
 
 ## Scripts
 
