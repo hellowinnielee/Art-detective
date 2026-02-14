@@ -46,7 +46,44 @@ const listingsById = new Map<string, ListingRecord>();
 const UNDO_TTL_MS = 10_000;
 
 function normalizeUrlKey(url: string): string {
-  return url.trim().toLowerCase();
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  try {
+    const parsed = new URL(trimmed);
+    parsed.hash = "";
+    const trackingParams = [
+      "utm_source",
+      "utm_medium",
+      "utm_campaign",
+      "utm_term",
+      "utm_content",
+      "gclid",
+      "fbclid",
+    ];
+    for (const key of trackingParams) parsed.searchParams.delete(key);
+    const pathname = parsed.pathname.replace(/\/+$/, "") || "/";
+    return `${parsed.protocol}//${parsed.hostname.toLowerCase()}${pathname}${parsed.search}`;
+  } catch {
+    return trimmed.toLowerCase();
+  }
+}
+
+function dedupeWatchlist(items: WatchlistItem[]): WatchlistItem[] {
+  const seenListingIds = new Set<string>();
+  const seenUrls = new Set<string>();
+  const result: WatchlistItem[] = [];
+
+  for (const item of items) {
+    const listingId = item.listingId?.trim();
+    const urlKey = normalizeUrlKey(item.url);
+    if (!listingId || !urlKey) continue;
+    if (seenListingIds.has(listingId) || seenUrls.has(urlKey)) continue;
+    seenListingIds.add(listingId);
+    seenUrls.add(urlKey);
+    result.push(item);
+  }
+
+  return result;
 }
 
 export function ensureUser(email: string): User {
@@ -95,15 +132,15 @@ export function listFollowing(userId: string): string[] {
 }
 
 export function addWatchlist(userId: string, item: WatchlistItem): void {
-  const list = watchlistByUser.get(userId) ?? [];
+  const list = dedupeWatchlist(watchlistByUser.get(userId) ?? []);
   const incomingUrlKey = normalizeUrlKey(item.url);
-  const deduped = [
+  const next = dedupeWatchlist([
     item,
     ...list.filter(
       (entry) => entry.listingId !== item.listingId && normalizeUrlKey(entry.url) !== incomingUrlKey
     ),
-  ];
-  watchlistByUser.set(userId, deduped);
+  ]);
+  watchlistByUser.set(userId, next);
 
   const deleted = deletedWatchlistByUser.get(userId);
   if (!deleted) return;
@@ -115,7 +152,9 @@ export function addWatchlist(userId: string, item: WatchlistItem): void {
 }
 
 export function listWatchlist(userId: string): WatchlistItem[] {
-  return watchlistByUser.get(userId) ?? [];
+  const deduped = dedupeWatchlist(watchlistByUser.get(userId) ?? []);
+  watchlistByUser.set(userId, deduped);
+  return deduped;
 }
 
 function getDeletedMap(userId: string): Map<string, DeletedWatchlistRecord> {
