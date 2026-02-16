@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/server/requestAuth";
 import { buildSnapshotFromUrl } from "@/lib/server/snapshot";
+import { resolveSnapshotWithPlaceholder } from "@/lib/server/snapshotPlaceholder";
 import { parseJsonBody, errorResponse } from "@/lib/server/validation";
 import { urlPayloadSchema } from "@/lib/server/schemas";
 
@@ -59,8 +60,15 @@ export async function POST(req: NextRequest) {
     getAuthUser(req);
     const { url } = await parseJsonBody(req, urlPayloadSchema);
     requestedUrl = url;
-    const result = await buildSnapshotFromUrl(url);
-    return NextResponse.json(result);
+    const result = await resolveSnapshotWithPlaceholder(url, buildSnapshotFromUrl);
+    if (result.mode === "placeholder-cache") {
+      console.info(`[snapshot] placeholder cache hit for ${url}`);
+    } else if (result.mode === "live-seeded-placeholder") {
+      console.info(`[snapshot] live fetch seeded placeholder for ${url}`);
+    } else {
+      console.info(`[snapshot] live fetch for ${url}`);
+    }
+    return NextResponse.json(result.data);
   } catch (error) {
     const message = (error as Error)?.message ?? "";
     const actionable = buildActionableSnapshotError(message, requestedUrl);

@@ -7,13 +7,30 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg-0: #efe6d7;
+  --bg-1: #f9f0e1;
+  --surface-0: #f9f0e1;
+  --surface-1: #ffffff;
+  --surface-2: #f6ecdc;
+  --line-soft: rgba(0, 0, 0, 0.12);
+  --text-strong: #111111;
+  --text-main: #111111;
+  --text-sub: #494949;
+  --accent: #7d1919;
+  --accent-strong: #8f1e1e;
+  --ok: #22a379;
+  --warn: #9a6700;
+  --danger: #c33024;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #e6e8f1;
-  color: #1a1a1f;
+  background: #dde1ea;
+  color: var(--text-main);
 }
 
 .frameRoot {
@@ -23,6 +40,7 @@ body {
   justify-content: center;
   padding: 24px;
   overflow: auto;
+  background: #dde1ea;
 }
 
 .phoneFrame {
@@ -76,8 +94,8 @@ body {
 .content {
   flex: 1;
   overflow: auto;
-  background: #f8f8fb;
-  border-radius: 48px 48px 0 0;
+  background: var(--surface-0);
+  border-radius: 48px;
   border: 1px solid #2b2c2f;
   padding: 108px 16px 16px;
   display: flex;
@@ -89,6 +107,11 @@ body {
   scrollbar-width: none;
 }
 
+.content.contentWithNav {
+  border-radius: 48px 48px 0 0;
+  border-bottom: none;
+}
+
 .content::-webkit-scrollbar {
   display: none;
 }
@@ -97,9 +120,12 @@ h1 {
   font-size: 28px;
   font-weight: 700;
   margin: 0;
+  color: #111111;
+  letter-spacing: -0.02em;
 }
 
 .appTitle {
+  font-family: "Stardos Stencil", Georgia, "Times New Roman", Times, serif;
   font-weight: 700;
 }
 
@@ -107,10 +133,11 @@ h2 {
   font-size: 18px;
   font-weight: 600;
   margin: 0;
+  color: #111111;
 }
 
 .sub {
-  color: #4a4a55;
+  color: var(--text-sub);
   font-size: 14px;
   margin: 0;
 }
@@ -121,20 +148,40 @@ h2 {
 }
 
 .card {
-  background: #fff;
-  border-radius: 12px;
+  background: var(--surface-0);
+  border-radius: 0;
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 input {
   height: 42px;
   border-radius: 10px;
-  border: 1px solid #dedee6;
+  border: 1px solid #000;
   padding: 0 12px;
   font-size: 14px;
+  font-family: var(--font-courier-prime), "Courier Prime", "Courier New", Courier, monospace;
+  color: #e2c89c;
+  background: #000;
+}
+
+input::placeholder {
+  color: #e2c89c;
+}
+
+input:focus-visible {
+  outline: none;
+  border-color: #7d1919;
+  box-shadow: 0 0 0 2px rgba(125, 25, 25, 0.16);
+}
+
+textarea {
+  font-family: var(--font-courier-prime), "Courier Prime", "Courier New", Courier, monospace;
 }
 
 .listingInputRow {
@@ -155,9 +202,9 @@ input {
   height: 20px;
   min-width: 20px;
   border-radius: 999px;
-  border: 1px solid #d5d7e5;
-  background: #ffffff;
-  color: #5d6074;
+  border: 1px solid #2f2f2f;
+  background: #111;
+  color: #e2c89c;
   font-size: 14px;
   line-height: 1;
   padding: 0;
@@ -165,39 +212,39 @@ input {
 }
 
 .clearInputButton:hover {
-  background: #d9d6ff;
+  background: #2b2b2b;
 }
 
 .clearInputButton:active {
-  background: #e8ecff;
+  background: #1f1f1f;
   transform: translateY(-50%) scale(0.96);
 }
 
 button {
   border: none;
-  border-radius: 6px;
-  background: #241f92;
+  border-radius: 4px;
+  background: var(--accent);
   color: #fff;
   padding: 10px 14px;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 120ms ease, background-color 140ms ease, color 140ms ease, border-color 140ms ease,
     box-shadow 140ms ease, opacity 140ms ease;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  box-shadow: none;
 }
 
 button:hover:not(:disabled) {
-  background: #d9d6ff;
+  background: #922020;
 }
 
 button:active:not(:disabled) {
   transform: translateY(1px) scale(0.995);
-  background: #c8c3fb;
+  background: #6f1515;
 }
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #cfd4ff, 0 0 0 4px #241f92;
+  box-shadow: 0 0 0 2px #f9f0e1, 0 0 0 4px #7d1919;
 }
 
 button:disabled {
@@ -206,41 +253,349 @@ button:disabled {
   box-shadow: none;
 }
 
+/* Force sharp edges for all text fields and buttons across the app. */
+input,
+textarea,
+button,
+.clearInputButton,
+.deleteListingButton,
+.undoButton,
+.missionScanButton,
+.tab {
+  border-radius: 0 !important;
+}
+
 button.secondary {
-  background: #fff;
-  color: #241f92;
-  border: 1px solid #241f92;
+  background: #f9f0e1;
+  color: #111111;
+  border: 1px solid #7d1919;
   box-shadow: none;
 }
 
 button.secondary:hover:not(:disabled) {
-  background: #d9d6ff;
+  background: #f1e4cf;
 }
 
 button.secondary:active:not(:disabled) {
-  background: #dcdde6;
-  border-color: #1e1a7d;
+  background: #eadabf;
+  border-color: #651111;
 }
 
 button.savedStateButton,
 button.savedStateButton:active {
-  background: #e8f7ee;
-  border-color: #2b9a5f;
-  color: #17663d;
+  background: #f9f0e1;
+  border-color: #7d1919;
+  color: #7d1919;
+  opacity: 0.7;
   transform: none;
 }
 
 button.savedStateButton:hover {
-  background: #d9d6ff;
+  background: #f9f0e1;
+  opacity: 0.7;
 }
 
 button.savedStateButton:active {
-  background: #d1ded6;
+  background: #f9f0e1;
+  opacity: 0.7;
 }
 
 .row {
   display: flex;
   gap: 10px;
+}
+
+.missionTopBar {
+  margin: -108px -16px 0;
+  height: 112px;
+  background: #bd7c52;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.missionBadge {
+  position: absolute;
+  left: 0;
+  top: 56px;
+  height: 56px;
+  width: 132px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px 12px;
+  background: #e2c89c;
+  color: #111;
+  font-family: "Stardos Stencil", Georgia, serif;
+  font-size: 28px;
+  line-height: 23px;
+  font-weight: 700;
+  box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.classifiedLabel {
+  position: absolute;
+  right: 16px;
+  top: 11px;
+  margin: 0;
+  color: #111;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.missionInputCard {
+  padding: 16px;
+  gap: 12px;
+  margin-top: 0;
+}
+
+.missionInputCard .row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.missionInputCard .listingInputRow input {
+  height: 42px;
+  border-radius: 4px;
+  border: 1px solid #000;
+  background: #000;
+  color: #e2c89c;
+  font-family: "Courier Prime", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.missionInputCard .listingInputRow input::placeholder {
+  color: #e2c89c;
+}
+
+.missionScanButton {
+  width: 100%;
+  height: 42px;
+  border-radius: 4px;
+  background: #7d1919;
+  color: #fff;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.missionScanButton:disabled {
+  opacity: 1;
+  background: #7d1919;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.missionScanButton:hover:not(:disabled) {
+  background: #922020;
+}
+
+.missionScanButton:active:not(:disabled) {
+  background: #6f1515;
+}
+
+.scanButtonLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.savedReportsTitle {
+  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-size: 24px;
+  line-height: 22px;
+  font-weight: 700;
+}
+
+.savedReportsCard {
+  padding: 20px 16px 12px;
+  gap: 8px;
+}
+
+.profileCard {
+  padding: 0;
+  gap: 0;
+}
+
+.profileTitle {
+  margin: 0;
+  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+}
+
+.profileDivider {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 10px 0 12px;
+}
+
+.profileDividerBottom {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.profileLabel {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 6px;
+}
+
+.profileInput {
+  height: 46px;
+  border: 1px solid #b4b1aa !important;
+  background: #fff !important;
+  color: #111 !important;
+  padding: 0 14px;
+  margin: 0 0 10px;
+  border-radius: 12px !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 13px;
+}
+
+.profileInput::placeholder {
+  color: #868686;
+}
+
+.profileHelper {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.25;
+  color: #232323;
+}
+
+.profileSaveButton {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 44px;
+  background: #8f1617;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 10px !important;
+}
+
+.profileSaveButton:hover:not(:disabled) {
+  background: #a11a1c;
+}
+
+.profileSaveButton:active:not(:disabled) {
+  background: #761213;
+}
+
+.profileLogoutButton {
+  width: 100%;
+  background: transparent;
+  color: #7d1919;
+  border: none;
+  box-shadow: none;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 0;
+}
+
+.profileLogoutButton:hover:not(:disabled),
+.profileLogoutButton:active:not(:disabled) {
+  background: transparent;
+  color: #8f1617;
+  transform: none;
+}
+
+/* Sign in page additional elements */
+.otpButton {
+  width: 100%;
+  height: 42px;
+  background: #f9f0e1;
+  color: #7d1919;
+  border: 2px solid #7d1919;
+  border-radius: 4px;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 0;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.otpButton:hover {
+  background: #f1e4cf;
+  border-color: #8f1617;
+}
+
+.otpButton:active {
+  background: #e8d7c0;
+}
+
+.forgotText {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #7d1919;
+  text-align: center;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.forgotLink {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #7d1919;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  box-shadow: none;
+  min-height: auto;
+  height: auto;
+  display: inline;
+  line-height: inherit;
+}
+
+.forgotLink:hover {
+  color: #8f1617;
+  background: none;
+  transform: none;
+}
+
+.forgotLink:active {
+  color: #6f1515;
+  background: none;
+  transform: none;
+}
+
+.savedListMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sortButton {
+  background: transparent;
+  color: #303030;
+  border: none;
+  padding: 0;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.sortButton:hover:not(:disabled),
+.sortButton:active:not(:disabled) {
+  background: transparent;
+  color: #101010;
+  transform: none;
 }
 
 .carousel {
@@ -252,12 +607,12 @@ button.savedStateButton:active {
 .carousel img,
 .imgFallback {
   border-radius: 10px;
-  background: #eef0f6;
+  background: #151922;
   object-fit: cover;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b6b78;
+  color: #9ba1b0;
 }
 
 .carousel img {
@@ -273,7 +628,7 @@ button.savedStateButton:active {
 
 label {
   font-size: 12px;
-  color: #6b6b78;
+  color: #999fad;
   font-weight: 600;
 }
 
@@ -281,6 +636,7 @@ label {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
+  color: #e9e5dc;
 }
 
 .score {
@@ -289,19 +645,39 @@ label {
   font-weight: 700;
 }
 .good {
-  color: #157347;
+  color: var(--ok);
 }
 .review {
-  color: #9a6700;
+  color: var(--warn);
 }
 .missing {
-  color: #b42318;
+  color: var(--danger);
 }
 
 .snapshotAction {
   margin: 0;
   font-size: 13px;
-  color: #3f4150;
+  color: #beb9ad;
+}
+
+.snapshotPageHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.snapshotPageHeader h2 {
+  margin: 0;
+}
+
+.backButton {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.snapshotSaveButton {
+  margin-top: 10px;
 }
 
 .bucketGrid {
@@ -311,10 +687,26 @@ label {
 }
 
 .bucketCard {
-  border: 1px solid #e7e9f3;
-  border-radius: 10px;
+  border: 1px solid #111;
+  border-radius: 4px;
   padding: 10px;
-  background: #fafbff;
+  background: #f9f0e1;
+}
+
+.bucketToggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.bucketToggle:focus-visible {
+  outline: 2px solid #8f93ff;
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 .bucketHeader {
@@ -324,28 +716,64 @@ label {
   gap: 8px;
 }
 
+.bucketHeaderRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .bucketHeader p {
   margin: 0;
   font-size: 13px;
   font-weight: 700;
+  color: #111;
+}
+
+.bucketChevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+}
+
+.bucketChevron.open {
+  transform: rotate(180deg);
+}
+
+.bucketDetails {
+  margin-top: 6px;
+  animation: bucketExpand 0.18s ease-out;
+}
+
+@keyframes bucketExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .bucketMeta {
   margin: 4px 0 0;
   font-size: 11px;
-  color: #61657b;
+  color: #333;
 }
 
 .bucketExplain {
   margin: 4px 0 0;
   font-size: 12px;
-  color: #4f5368;
+  color: #333;
 }
 
 .bucketCheck {
   margin: 2px 0 0;
   font-size: 12px;
-  color: #4f5368;
+  color: #333;
 }
 
 .statusChip {
@@ -361,25 +789,25 @@ label {
 }
 
 .chipGood {
-  color: #0f7a43;
-  background: #e7f7ef;
-  border-color: #bde8d0;
+  color: #111;
+  background: #fff;
+  border-color: #ff0000;
 }
 
 .chipReview {
-  color: #9a6700;
-  background: #fff4dc;
-  border-color: #f1d69d;
+  color: #111;
+  background: #fff;
+  border-color: #ff0000;
 }
 
 .chipMissing {
-  color: #b42318;
-  background: #fdecec;
-  border-color: #f7c4c1;
+  color: #111;
+  background: #fff;
+  border-color: #ff0000;
 }
 
 .signalBlock {
-  border-top: 1px solid #eceef6;
+  border-top: 1px solid #222;
   padding-top: 8px;
 }
 
@@ -387,7 +815,7 @@ label {
   margin: 0 0 4px;
   font-size: 12px;
   font-weight: 700;
-  color: #454960;
+  color: #222;
 }
 
 .signalGood,
@@ -419,12 +847,12 @@ button.tiny {
 }
 
 button.tiny:hover:not(:disabled) {
-  background: #d9d6ff;
-  border-color: #b7bfdc;
+  background: #f2e8d7;
+  border-color: #d7bf98;
 }
 
 button.tiny:active:not(:disabled) {
-  background: #dddee6;
+  background: #ead9bf;
 }
 
 .discoverItem {
@@ -432,7 +860,7 @@ button.tiny:active:not(:disabled) {
   gap: 12px;
   padding-top: 10px;
   margin-top: 10px;
-  border-top: 1px solid #f0f0f5;
+  border-top: 1px solid #111;
 }
 
 .discoverThumb,
@@ -445,7 +873,7 @@ button.tiny:active:not(:disabled) {
   max-height: 72px;
   aspect-ratio: 1 / 1;
   border-radius: 10px;
-  background: #eef0f6;
+  background: #e9e9e9;
   object-fit: cover;
   display: block;
   font-size: 11px;
@@ -465,9 +893,8 @@ button.tiny:active:not(:disabled) {
 }
 
 .lineItem {
-  padding-top: 10px;
-  margin-top: 10px;
-  border-top: 1px solid #f0f0f5;
+  padding: 13px 0 12px;
+  border-top: 1px solid #111;
 }
 
 .lineItem p {
@@ -478,43 +905,45 @@ button.tiny:active:not(:disabled) {
 
 .lineItemButton {
   width: 100%;
-  border: 1px solid #111;
-  background: #fff;
+  border: none;
+  background: transparent;
   color: #000;
-  padding: 10px;
+  padding: 0;
   text-align: left;
-  border-radius: 6px;
+  border-radius: 0;
   box-shadow: none;
   transform: none;
 }
 
 .savedItemContainer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 }
 
 .lineItemButton:hover:not(:disabled) {
-  background: #d9d6ff;
+  background: transparent;
+  opacity: 0.8;
 }
 
 .lineItemButton:active:not(:disabled) {
-  background: #dddee6;
+  background: transparent;
+  opacity: 0.6;
   transform: none;
 }
 
 .savedItemRow {
   display: flex;
-  gap: 10px;
+  gap: 16px;
   align-items: flex-start;
 }
 
 .savedThumb,
 .savedThumbFallback {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
-  background: #eef0f6;
+  width: 130px;
+  height: 130px;
+  border-radius: 4px;
+  background: #e9e9e9;
   object-fit: cover;
   flex: 0 0 auto;
 }
@@ -573,13 +1002,13 @@ button.tiny:active:not(:disabled) {
 }
 
 .deleteListingButton:hover:not(:disabled) {
-  background: #d9d6ff;
-  border-color: #c9d0ec;
+  background: #f2e8d7;
+  border-color: #d7bf98;
   color: #4f5675;
 }
 
 .deleteListingButton:active:not(:disabled) {
-  background: #dbdde6;
+  background: #ead9bf;
   transform: none;
 }
 
@@ -603,8 +1032,8 @@ button.tiny:active:not(:disabled) {
 
 .undoButton {
   background: #fff;
-  border: 1px solid #241f92;
-  color: #241f92;
+  border: 1px solid #7d1919;
+  color: #7d1919;
   box-shadow: none;
   padding: 6px 10px;
 }
@@ -665,7 +1094,7 @@ button.tiny:active:not(:disabled) {
 }
 
 .dangerButton:hover:not(:disabled) {
-  background: #d9d6ff;
+  background: #d8483b;
 }
 
 .dangerButton:active:not(:disabled) {
@@ -676,8 +1105,8 @@ button.tiny:active:not(:disabled) {
 .tabBar {
   display: flex;
   justify-content: center;
-  background: #fff;
-  border: 1px solid #2b2c2f;
+  background: #e2c89c;
+  border: 1px solid #d4b88a;
   border-top: none;
   border-radius: 0 0 48px 48px;
   padding: 6px 8px 8px;
@@ -688,12 +1117,13 @@ button.tiny:active:not(:disabled) {
   flex: 0 0 67px;
   width: 67px;
   height: 67px;
-  border-radius: 6px;
+  border-radius: 27px;
   padding: 0;
   font-size: 12px;
-  background: transparent;
-  color: #6b6b78;
+  background: transparent !important;
+  color: #5f5f5f;
   border: none;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -730,16 +1160,16 @@ button.tiny:active:not(:disabled) {
 }
 
 .tab:hover:not(.active) {
-  background: #d9d6ff;
+  background: transparent !important;
 }
 
 .tab:active {
-  background: #dddee6;
+  background: transparent !important;
   transform: translateY(1px);
 }
 
 .tab.active {
-  background-color: #d1cefb;
-  color: #241f92;
+  background: transparent !important;
+  color: #7d1919;
   font-weight: 700;
 }

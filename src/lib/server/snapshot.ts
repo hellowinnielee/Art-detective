@@ -122,6 +122,47 @@ function computeBucketScore(checks: SnapshotBucketCheck[]): number {
   return Math.round((value / total) * 100);
 }
 
+function sanitizeArtistCandidate(value: string): string {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/^[^A-Za-z]+/, "")
+    .replace(/[^A-Za-z.'\-\s]+$/g, "")
+    .trim();
+}
+
+function looksLikeArtistName(value: string): boolean {
+  if (!value) return false;
+  if (/\d/.test(value)) return false;
+  const words = value.split(/\s+/).filter(Boolean);
+  return words.length >= 2 && words.length <= 5;
+}
+
+function inferArtistName(title: string): string {
+  // Common pattern: "Artist Name \"Work Title\" Print"
+  const quoteIndex = title.search(/["'“”]/);
+  if (quoteIndex > 0) {
+    const quotedPrefix = sanitizeArtistCandidate(title.slice(0, quoteIndex));
+    if (looksLikeArtistName(quotedPrefix)) return quotedPrefix;
+  }
+
+  // Pattern: "... by Artist Name"
+  const byMatch = title.match(/\bby\s+([A-Za-z][A-Za-z .'\-]{1,80})/i);
+  if (byMatch?.[1]) {
+    const byArtist = sanitizeArtistCandidate(byMatch[1]);
+    if (looksLikeArtistName(byArtist)) return byArtist;
+  }
+
+  // Pattern: "Artist Name - Listing title"
+  const separatorMatch = title.match(/^(.+?)\s*[-|:]/);
+  if (separatorMatch?.[1]) {
+    const separated = sanitizeArtistCandidate(separatorMatch[1]);
+    if (looksLikeArtistName(separated)) return separated;
+  }
+
+  const fallback = sanitizeArtistCandidate(title);
+  return looksLikeArtistName(fallback) ? fallback : "Unknown artist";
+}
+
 export async function buildSnapshotFromUrl(url: string): Promise<SnapshotResponseBody> {
   const raw = await fetchListingHtml(url);
   const searchable = raw.toLowerCase();
@@ -144,8 +185,7 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
       ? Number(priceDollarMatch[1].replace(/,/g, ""))
       : undefined;
   const detectedCurrency = jsonLd.currency || extractMetaContent(raw, "product:price:currency") || "USD";
-  const artistMatch = title.match(/^(.*?)\s*[-|]|by\s+([A-Za-z0-9 .'\-_]+)/i);
-  const artist = artistMatch?.[1]?.trim() || artistMatch?.[2]?.trim() || "Unknown artist";
+  const artist = inferArtistName(title);
   const dimensions = inferDimensions(raw) ?? "Not provided";
   const ogImage = extractMetaContent(raw, "og:image");
   const imageUrls = [
