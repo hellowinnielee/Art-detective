@@ -824,16 +824,21 @@ export default function Home() {
           ) : null}
 
           {authed && tab === "Detective" && detectiveView === "snapshot" ? (
-            <section className="card">
-              <div className="snapshotPageHeader">
-                <button type="button" className="secondary backButton" onClick={() => setDetectiveView("home")}>
-                  ← Back
+            <>
+              <section className="missionTopBar snapshotTopBar" aria-label="Artwork report header">
+                <button
+                  type="button"
+                  className="snapshotBackIconButton"
+                  onClick={() => setDetectiveView("home")}
+                  aria-label="Back"
+                >
+                  ←
                 </button>
-                <h2>Artwork report</h2>
-              </div>
-              {snapshot ? (
-                <>
-                  <h2>Confidence Snapshot</h2>
+                <div className="missionBadge artworkReportBadge">Artwork report</div>
+              </section>
+              <section className="card">
+                {snapshot ? (
+                  <>
                   {cachedSnapshotAt ? (
                     <p className="sub">Showing last saved snapshot from {formatCachedTime(cachedSnapshotAt)}.</p>
                   ) : null}
@@ -855,18 +860,35 @@ export default function Home() {
                       )
                     )}
                   </div>
-                  <label>Artist</label>
-                  <p className="value">{decodeHtmlEntities(snapshot.artworkOverview.artistName)}</p>
-                  <label>Title</label>
-                  <p className="value">{decodeHtmlEntities(snapshot.artworkOverview.title)}</p>
-                  <label>Size/Dimensions</label>
-                  <p className="value">{decodeHtmlEntities(snapshot.artworkOverview.dimensions)}</p>
-                  <label>Price</label>
-                  <p className="value">
-                    {typeof snapshot.artworkOverview.price === "number"
-                      ? `${symbol(snapshot.artworkOverview.currency)}${snapshot.artworkOverview.price.toLocaleString()}`
-                      : "Price not available"}
-                  </p>
+                  <h3 className="snapshotDetailsHeading">DETAILS OF ARTWORK</h3>
+                  <div className="snapshotDetailList" aria-label="Artwork details">
+                    <div className="snapshotDetailRow">
+                      <span className="snapshotDetailLabel">Artist</span>
+                      <span className="snapshotDetailValue">
+                        {decodeHtmlEntities(snapshot.artworkOverview.artistName)}
+                      </span>
+                    </div>
+                    <div className="snapshotDetailRow">
+                      <span className="snapshotDetailLabel">Title</span>
+                      <span className="snapshotDetailValue">
+                        {decodeHtmlEntities(snapshot.artworkOverview.title)}
+                      </span>
+                    </div>
+                    <div className="snapshotDetailRow">
+                      <span className="snapshotDetailLabel">Size</span>
+                      <span className="snapshotDetailValue">
+                        {decodeHtmlEntities(snapshot.artworkOverview.dimensions)}
+                      </span>
+                    </div>
+                    <div className="snapshotDetailRow">
+                      <span className="snapshotDetailLabel">Price</span>
+                      <span className="snapshotDetailValue">
+                        {typeof snapshot.artworkOverview.price === "number"
+                          ? `${symbol(snapshot.artworkOverview.currency)}${snapshot.artworkOverview.price.toLocaleString()}`
+                          : "Price not available"}
+                      </span>
+                    </div>
+                  </div>
                   <p className={`score ${scoreClass}`}>{snapshot.snapshot.score}/100</p>
                   <p className="snapshotAction">
                     Recommended action:{" "}
@@ -913,24 +935,6 @@ export default function Home() {
                     })}
                   </div>
 
-                  <div className="signalBlock">
-                    <p className="signalTitle">Top 3 positive signals</p>
-                    {snapshot.snapshot.topPositiveSignals.slice(0, 3).map((signal) => (
-                      <p key={signal} className="signalGood">
-                        + {decodeHtmlEntities(signal)}
-                      </p>
-                    ))}
-                  </div>
-
-                  <div className="signalBlock">
-                    <p className="signalTitle">Top 3 missing/suspicious signals</p>
-                    {snapshot.snapshot.topMissingOrSuspiciousSignals.slice(0, 3).map((signal) => (
-                      <p key={signal} className="signalMissing">
-                        - {decodeHtmlEntities(signal)}
-                      </p>
-                    ))}
-                  </div>
-
                   <button
                     className={`otpButton snapshotSaveButton ${isCurrentListingSaved ? "savedStateButton" : ""}`}
                     onClick={saveListing}
@@ -945,11 +949,12 @@ export default function Home() {
                   >
                     View source
                   </button>
-                </>
-              ) : (
-                <p className="sub">Building snapshot...</p>
-              )}
-            </section>
+                  </>
+                ) : (
+                  <p className="sub">Building snapshot...</p>
+                )}
+              </section>
+            </>
           ) : null}
 
           {authed && tab === "Discover" ? (
@@ -1039,7 +1044,6 @@ export default function Home() {
             </>
           ) : null}
 
-          {loadingSnapshot ? <p className="sub">Building snapshot...</p> : null}
           {error ? <p className="err">{error}</p> : null}
           {undoDelete ? (
             <div className="undoToast" role="status" aria-live="polite">

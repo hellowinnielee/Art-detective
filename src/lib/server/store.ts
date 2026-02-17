@@ -1,4 +1,6 @@
 import { randomUUID } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { ListingRecord } from "./types";
 
 type User = {
@@ -38,12 +40,74 @@ type RestoreWatchlistResult =
 
 const usersByEmail = new Map<string, User>();
 const refreshToUserId = new Map<string, string>();
-const followsByUser = new Map<string, Set<string>>();
+const followsByEmail = new Map<string, Set<string>>();
 const watchlistByUser = new Map<string, WatchlistItem[]>();
 const deletedWatchlistByUser = new Map<string, Map<string, DeletedWatchlistRecord>>();
 const alertsByUser = new Map<string, Array<{ id: string; type: string; message: string; createdAt: string }>>();
 const listingsById = new Map<string, ListingRecord>();
 const UNDO_TTL_MS = 10_000;
+const DATA_DIR = join(process.cwd(), ".data");
+const STATE_FILE = join(DATA_DIR, "store-state.json");
+const TEMP_STATE_FILE = join(DATA_DIR, "store-state.tmp.json");
+let lastPersistedMtimeMs = 0;
+
+type PersistedStoreState = {
+  usersByEmail: Array<[string, User]>;
+  followsByEmail?: Array<[string, string[]]>;
+  // Backward compatibility for older persisted shape.
+  followsByUser?: Array<[string, string[]]>;
+};
+
+function loadPersistentState(force = false): void {
+  if (!existsSync(STATE_FILE)) return;
+  const mtimeMs = statSync(STATE_FILE).mtimeMs;
+  if (!force && mtimeMs <= lastPersistedMtimeMs) return;
+  const raw = readFileSync(STATE_FILE, "utf8");
+  const parsed = JSON.parse(raw) as PersistedStoreState;
+  usersByEmail.clear();
+  followsByEmail.clear();
+  for (const [email, user] of parsed.usersByEmail ?? []) {
+    usersByEmail.set(email, user);
+  }
+  for (const [email, artists] of parsed.followsByEmail ?? []) {
+    followsByEmail.set(email, new Set(artists));
+  }
+  if (!parsed.followsByEmail?.length && parsed.followsByUser?.length) {
+    for (const [userId, artists] of parsed.followsByUser) {
+      const user = findUserByIdInMemory(userId);
+      if (!user) continue;
+      followsByEmail.set(user.email, new Set(artists));
+    }
+  }
+  lastPersistedMtimeMs = mtimeMs;
+}
+
+function persistState(): void {
+  try {
+    mkdirSync(DATA_DIR, { recursive: true });
+    const payload: PersistedStoreState = {
+      usersByEmail: [...usersByEmail.entries()],
+      followsByEmail: [...followsByEmail.entries()].map(([email, artists]) => [email, [...artists.values()]]),
+    };
+    writeFileSync(TEMP_STATE_FILE, JSON.stringify(payload), "utf8");
+    renameSync(TEMP_STATE_FILE, STATE_FILE);
+    lastPersistedMtimeMs = statSync(STATE_FILE).mtimeMs;
+  } catch {
+    // Best effort persistence: app should still work in-memory if filesystem write is unavailable.
+    try {
+      unlinkSync(TEMP_STATE_FILE);
+    } catch {}
+  }
+}
+
+loadPersistentState(true);
+
+function findUserByIdInMemory(userId: string): User | undefined {
+  for (const user of usersByEmail.values()) {
+    if (user.id === userId) return user;
+  }
+  return undefined;
+}
 
 function normalizeUrlKey(url: string): string {
   const trimmed = url.trim();
@@ -87,19 +151,26 @@ function dedupeWatchlist(items: WatchlistItem[]): WatchlistItem[] {
 }
 
 export function ensureUser(email: string): User {
+  loadPersistentState();
   const key = email.trim().toLowerCase();
   const existing = usersByEmail.get(key);
   if (existing) return existing;
   const user: User = { id: `usr_${randomUUID().slice(0, 12)}`, email: key };
   usersByEmail.set(key, user);
+  persistState();
   return user;
 }
 
 export function getUserById(userId: string): User | undefined {
-  for (const user of usersByEmail.values()) {
-    if (user.id === userId) return user;
-  }
-  return undefined;
+  loadPersistentState();
+  return findUserByIdInMemory(userId);
+}
+
+function resolveEmailKey(userId: string, email?: string): string | undefined {
+  const direct = email?.trim().toLowerCase();
+  if (direct) return direct;
+  const user = getUserById(userId);
+  return user?.email;
 }
 
 export function storeRefresh(refreshToken: string, userId: string): void {
@@ -114,21 +185,32 @@ export function revokeRefresh(refreshToken: string): void {
   refreshToUserId.delete(refreshToken);
 }
 
-export function followArtist(userId: string, artist: string): void {
-  const set = followsByUser.get(userId) ?? new Set<string>();
+export function followArtist(userId: string, artist: string, email?: string): void {
+  loadPersistentState();
+  const emailKey = resolveEmailKey(userId, email);
+  if (!emailKey) return;
+  const set = followsByEmail.get(emailKey) ?? new Set<string>();
   set.add(artist);
-  followsByUser.set(userId, set);
+  followsByEmail.set(emailKey, set);
+  persistState();
 }
 
-export function unfollowArtist(userId: string, artist: string): void {
-  const set = followsByUser.get(userId);
+export function unfollowArtist(userId: string, artist: string, email?: string): void {
+  loadPersistentState();
+  const emailKey = resolveEmailKey(userId, email);
+  if (!emailKey) return;
+  const set = followsByEmail.get(emailKey);
   if (!set) return;
   set.delete(artist);
-  followsByUser.set(userId, set);
+  followsByEmail.set(emailKey, set);
+  persistState();
 }
 
-export function listFollowing(userId: string): string[] {
-  return [...(followsByUser.get(userId) ?? new Set<string>()).values()];
+export function listFollowing(userId: string, email?: string): string[] {
+  loadPersistentState();
+  const emailKey = resolveEmailKey(userId, email);
+  if (!emailKey) return [];
+  return [...(followsByEmail.get(emailKey) ?? new Set<string>()).values()];
 }
 
 export function addWatchlist(userId: string, item: WatchlistItem): void {

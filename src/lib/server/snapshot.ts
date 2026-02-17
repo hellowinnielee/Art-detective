@@ -257,7 +257,7 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
     },
     {
       key: "provenance",
-      label: "Provenance/context",
+      label: "Provenance",
       weight: 20,
       checks: provenanceChecks,
       score: computeBucketScore(provenanceChecks),

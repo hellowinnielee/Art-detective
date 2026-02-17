@@ -5,8 +5,8 @@ import { errorResponse } from "@/lib/server/validation";
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = getAuthUser(req);
-    return NextResponse.json({ artists: listFollowing(userId) });
+    const { userId, email } = getAuthUser(req);
+    return NextResponse.json({ artists: listFollowing(userId, email) });
   } catch (error) {
     return errorResponse(error);
   }

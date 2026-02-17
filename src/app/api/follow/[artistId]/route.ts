@@ -7,10 +7,10 @@ type Params = { params: Promise<{ artistId: string }> };
 
 export async function POST(req: NextRequest, context: Params) {
   try {
-    const { userId } = getAuthUser(req);
+    const { userId, email } = getAuthUser(req);
     const { artistId } = await context.params;
     if (!artistId) throw new HttpError("Artist ID is required.", 400);
-    followArtist(userId, artistId);
+    followArtist(userId, artistId, email);
     return NextResponse.json({ ok: true, artistId }, { status: 201 });
   } catch (error) {
     return errorResponse(error);
@@ -19,10 +19,10 @@ export async function POST(req: NextRequest, context: Params) {
 
 export async function DELETE(req: NextRequest, context: Params) {
   try {
-    const { userId } = getAuthUser(req);
+    const { userId, email } = getAuthUser(req);
     const { artistId } = await context.params;
     if (!artistId) throw new HttpError("Artist ID is required.", 400);
-    unfollowArtist(userId, artistId);
+    unfollowArtist(userId, artistId, email);
     return NextResponse.json({ ok: true, artistId });
   } catch (error) {
     return errorResponse(error);

@@ -334,6 +334,46 @@ button.savedStateButton:active {
   box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.25);
 }
 
+.snapshotTopBar {
+  height: 112px;
+}
+
+.artworkReportBadge {
+  top: 56px;
+  height: 56px;
+  width: auto;
+  max-width: min(100%, 400px);
+  justify-content: flex-start;
+  padding: 0 39px 12px 70px;
+  font-size: 28px;
+  line-height: 23px;
+  white-space: nowrap;
+}
+
+.snapshotBackIconButton {
+  position: absolute;
+  left: 18px;
+  top: 78px;
+  z-index: 2;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #111;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.snapshotBackIconButton:hover:not(:disabled),
+.snapshotBackIconButton:active:not(:disabled) {
+  background: transparent;
+  color: #111;
+  transform: none;
+}
+
 .classifiedLabel {
   position: absolute;
   right: 16px;
@@ -594,7 +634,6 @@ button.savedStateButton:active {
 .sortButton:hover:not(:disabled),
 .sortButton:active:not(:disabled) {
   background: transparent;
-  color: #101010;
   transform: none;
 }
 
@@ -656,8 +695,9 @@ label {
 
 .snapshotAction {
   margin: 0;
-  font-size: 13px;
-  color: #beb9ad;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
 }
 
 .snapshotPageHeader {
@@ -680,6 +720,45 @@ label {
   margin-top: 10px;
 }
 
+.snapshotDetailsHeading {
+  margin: 10px 0 6px;
+  font-size: 14px;
+  line-height: 1.1;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  color: #111;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.snapshotDetailList {
+  margin-top: 4px;
+  border-top: 2px solid #111;
+}
+
+.snapshotDetailRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #111;
+}
+
+.snapshotDetailLabel {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+.snapshotDetailValue {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+  word-break: break-word;
+}
+
 .bucketGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -691,6 +770,15 @@ label {
   border-radius: 4px;
   padding: 10px;
   background: #f9f0e1;
+  transition: border-color 140ms ease;
+}
+
+.bucketCard:hover {
+  border-color: var(--accent);
+}
+
+.bucketCard:hover .bucketHeader p {
+  color: var(--accent);
 }
 
 .bucketToggle {
@@ -701,6 +789,13 @@ label {
   text-align: left;
   color: inherit;
   cursor: pointer;
+}
+
+.bucketToggle:hover:not(:disabled),
+.bucketToggle:active:not(:disabled) {
+  background: transparent;
+  color: inherit;
+  transform: none;
 }
 
 .bucketToggle:focus-visible {
@@ -789,20 +884,23 @@ label {
 }
 
 .chipGood {
+  font-weight: 700;
   color: #111;
-  background: #fff;
-  border-color: #ff0000;
+  background: transparent;
+  border-color: var(--ok);
 }
 
 .chipReview {
+  font-weight: 700;
   color: #111;
-  background: #fff;
+  background: transparent;
   border-color: #ff0000;
 }
 
 .chipMissing {
+  font-weight: 700;
   color: #111;
-  background: #fff;
+  background: transparent;
   border-color: #ff0000;
 }
 

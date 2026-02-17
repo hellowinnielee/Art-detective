@@ -6,8 +6,8 @@ import { errorResponse } from "@/lib/server/validation";
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = getAuthUser(req);
-    const artists = listFollowing(userId);
+    const { userId, email } = getAuthUser(req);
+    const artists = listFollowing(userId, email);
     if (!artists.length) {
       return NextResponse.json(
         { items: [], message: "Follow artists to unlock Discover listings." },
