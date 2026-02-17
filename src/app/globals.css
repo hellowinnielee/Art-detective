@@ -851,7 +851,7 @@ label {
 }
 
 .aiWarning {
-  margin: -12px 0 0;
+  margin: -8px 0 0;
   width: 100%;
   align-self: stretch;
   box-sizing: border-box;
@@ -859,7 +859,7 @@ label {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 12px 4px 0;
+  padding: 10px 12px 10px 0;
 }
 
 .aiWarningIcon {
@@ -893,7 +893,7 @@ label {
 @media (max-width: 640px) {
   .aiWarning {
     gap: 8px;
-    padding: 4px 12px 4px 0;
+    padding: 10px 12px 10px 0;
   }
 
   .aiWarningIcon {
