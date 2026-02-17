@@ -9,10 +9,16 @@ export async function GET(req: NextRequest) {
     const { userId } = getAuthUser(req);
     const artists = listFollowing(userId);
     if (!artists.length) {
-      return NextResponse.json({ items: [], message: "Follow artists to unlock Discover listings." });
+      return NextResponse.json(
+        { items: [], message: "Follow artists to unlock Discover listings." },
+        { headers: { "Cache-Control": "no-store, max-age=0" } }
+      );
     }
     const items = await discoverForArtists(artists);
-    return NextResponse.json({ items, followedArtists: artists.length });
+    return NextResponse.json(
+      { items, followedArtists: artists.length },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   } catch (error) {
     return errorResponse(error);
   }

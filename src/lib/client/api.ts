@@ -14,12 +14,14 @@ async function refreshAccessToken(refreshToken: string): Promise<{ accessToken: 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const session = getSession();
   const headers = new Headers(init?.headers ?? {});
+  const method = (init?.method ?? "GET").toUpperCase();
+  const requestInit: RequestInit = method === "GET" ? { ...init, headers, cache: "no-store" } : { ...init, headers };
   if (session?.accessToken) headers.set("Authorization", `Bearer ${session.accessToken}`);
   if (!headers.has("Content-Type") && !(init?.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
-  let response = await fetch(path, { ...init, headers });
+  let response = await fetch(path, requestInit);
 
   if (response.status === 401 && session?.refreshToken) {
     try {
@@ -28,7 +30,9 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
       const retry = new Headers(init?.headers ?? {});
       retry.set("Authorization", `Bearer ${refreshed.accessToken}`);
       if (!retry.has("Content-Type") && !(init?.body instanceof FormData)) retry.set("Content-Type", "application/json");
-      response = await fetch(path, { ...init, headers: retry });
+      const retryInit: RequestInit =
+        method === "GET" ? { ...init, headers: retry, cache: "no-store" } : { ...init, headers: retry };
+      response = await fetch(path, retryInit);
     } catch {
       clearSession();
       throw new Error("Session refresh failed.");

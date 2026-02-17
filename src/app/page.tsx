@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image, { type ImageLoaderProps } from "next/image";
 import { apiRequest } from "@/lib/client/api";
 import { clearSession, getSession, saveSession } from "@/lib/client/session";
+import { DISCOVER_MOCK_ITEMS, type DiscoverItem } from "@/lib/shared/discoverMock";
 
 type Tab = "Discover" | "Detective" | "Profile";
 type DetectiveView = "home" | "snapshot";
@@ -38,16 +39,6 @@ type SnapshotResponse = {
     price?: number;
     currency: string;
   };
-};
-
-type DiscoverItem = {
-  id: string;
-  artist: string;
-  title: string;
-  year?: string;
-  medium?: string;
-  source: string;
-  imageUrl?: string;
 };
 
 type WatchlistItem = {
@@ -116,6 +107,28 @@ function formatSourceLabel(source: string): string {
 function formatPrice(value?: number, currency?: string): string {
   if (typeof value !== "number") return "Price unavailable";
   return `${symbol(currency)}${value.toLocaleString()}`;
+}
+
+function discoverFromFollowing(artists: string[]): DiscoverItem[] {
+  const followed = artists.map((a) => a.trim().toLowerCase()).filter(Boolean);
+  if (!followed.length) return [];
+  return DISCOVER_MOCK_ITEMS.filter((item) =>
+    followed.some((artist) => {
+      const candidate = item.artist.toLowerCase();
+      return candidate.includes(artist) || artist.includes(candidate);
+    })
+  );
+}
+
+function resolveCanonicalArtistName(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return "";
+  const normalized = trimmed.toLowerCase();
+  const exact = DISCOVER_MOCK_ITEMS.find((item) => item.artist.toLowerCase() === normalized);
+  if (exact) return exact.artist;
+  const partial = DISCOVER_MOCK_ITEMS.find((item) => item.artist.toLowerCase().includes(normalized));
+  if (partial) return partial.artist;
+  return formatArtistName(trimmed);
 }
 
 function statusClass(status: "Good" | "Needs review" | "Missing evidence"): string {
@@ -317,7 +330,7 @@ export default function Home() {
 
   useEffect(() => {
     if (authed && tab === "Discover") {
-      refreshDiscover().catch(() => undefined);
+      refreshDiscover();
     }
   }, [authed, tab]);
 
@@ -418,11 +431,11 @@ export default function Home() {
   async function refreshFollowing() {
     const data = await apiRequest<{ artists: string[] }>("/api/following");
     setFollowing(data.artists);
+    return data.artists;
   }
 
-  async function refreshDiscover() {
-    const data = await apiRequest<{ items: DiscoverItem[] }>("/api/discover");
-    setDiscoverItems(data.items);
+  function refreshDiscover(artists = following) {
+    setDiscoverItems(discoverFromFollowing(artists));
   }
 
   async function refreshSaved(cacheEmail = email) {
@@ -434,7 +447,9 @@ export default function Home() {
   }
 
   async function refreshAll(cacheEmail = email) {
-    await Promise.all([refreshFollowing(), refreshDiscover(), refreshSaved(cacheEmail)]);
+    const artists = await refreshFollowing();
+    refreshDiscover(artists);
+    await refreshSaved(cacheEmail);
   }
 
   function handleApiError(err: unknown) {
@@ -485,12 +500,6 @@ export default function Home() {
     setFollowing([]);
     setDiscoverItems([]);
     setWatchlist([]);
-  }
-
-  function saveProfileDetails() {
-    if (typeof window === "undefined" || !authed) return;
-    const key = `art_detective_profile_${email.trim().toLowerCase()}`;
-    window.localStorage.setItem(key, JSON.stringify({ firstName, lastName }));
   }
 
   async function runSnapshot() {
@@ -562,12 +571,13 @@ export default function Home() {
   }
 
   async function followArtist() {
-    const artist = formatArtistName(artistInput);
+    const artist = resolveCanonicalArtistName(artistInput);
     if (!artist) return;
     try {
       await apiRequest(`/api/follow/${encodeURIComponent(artist)}`, { method: "POST" });
       setArtistInput("");
-      await Promise.all([refreshFollowing(), refreshDiscover()]);
+      const artists = await refreshFollowing();
+      refreshDiscover(artists);
     } catch (err) {
       handleApiError(err);
     }
@@ -576,7 +586,8 @@ export default function Home() {
   async function unfollowArtist(artist: string) {
     try {
       await apiRequest(`/api/follow/${encodeURIComponent(artist)}`, { method: "DELETE" });
-      await Promise.all([refreshFollowing(), refreshDiscover()]);
+      const artists = await refreshFollowing();
+      refreshDiscover(artists);
     } catch (err) {
       handleApiError(err);
     }
@@ -993,11 +1004,8 @@ export default function Home() {
                   <div>
                     <strong>{decodeHtmlEntities(item.title)}</strong>
                     <p>{decodeHtmlEntities(item.artist)}</p>
-                    <p>
-                      {decodeHtmlEntities(item.source)}
-                      {item.year ? ` | ${item.year}` : ""}
-                    </p>
-                    {item.medium ? <p>{decodeHtmlEntities(item.medium)}</p> : null}
+                    {item.shopName ? <p>{decodeHtmlEntities(item.shopName)}</p> : null}
+                    {typeof item.price === "number" ? <p>{formatPrice(item.price, item.currency)}</p> : null}
                   </div>
                 </div>
               ))}
@@ -1012,24 +1020,17 @@ export default function Home() {
               </section>
 
               <section className="card missionInputCard">
-                <label className="profileLabel">First Name</label>
                 <input
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First Name"
                 />
-                <label className="profileLabel">Last Name</label>
                 <input
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last Name"
                 />
                 <p className="profileHelper">Your profile and saved reports are stored locally on your device.</p>
-                <div className="row">
-                  <button className="missionScanButton" type="button" onClick={saveProfileDetails}>
-                    Save profile
-                  </button>
-                </div>
                 <div className="profileDivider profileDividerBottom" aria-hidden="true" />
                 <button className="profileLogoutButton" type="button" onClick={logout}>
                   Logout

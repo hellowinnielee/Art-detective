@@ -320,11 +320,11 @@ button.savedStateButton:active {
   left: 0;
   top: 56px;
   height: 56px;
-  width: 132px;
+  width: 178px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 16px 12px;
+  padding: 0 39px 12px;
   background: #e2c89c;
   color: #111;
   font-family: "Stardos Stencil", Georgia, serif;
@@ -839,7 +839,7 @@ label {
 }
 
 button.tiny {
-  background: #fff;
+  background: transparent;
   color: #4a4a55;
   border: 1px solid #d0d3e8;
   padding: 4px 10px;
@@ -847,12 +847,12 @@ button.tiny {
 }
 
 button.tiny:hover:not(:disabled) {
-  background: #f2e8d7;
+  background: transparent;
   border-color: #d7bf98;
 }
 
 button.tiny:active:not(:disabled) {
-  background: #ead9bf;
+  background: transparent;
 }
 
 .discoverItem {
@@ -872,7 +872,7 @@ button.tiny:active:not(:disabled) {
   max-width: 72px;
   max-height: 72px;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
+  border-radius: 4px;
   background: #e9e9e9;
   object-fit: cover;
   display: block;
@@ -990,7 +990,7 @@ button.tiny:active:not(:disabled) {
   min-width: 24px;
   border-radius: 999px;
   border: 1px solid #d8dced;
-  background: #fff;
+  background: transparent;
   color: #7d8198;
   padding: 0;
   display: inline-flex;
@@ -1002,13 +1002,13 @@ button.tiny:active:not(:disabled) {
 }
 
 .deleteListingButton:hover:not(:disabled) {
-  background: #f2e8d7;
+  background: transparent;
   border-color: #d7bf98;
   color: #4f5675;
 }
 
 .deleteListingButton:active:not(:disabled) {
-  background: #ead9bf;
+  background: transparent;
   transform: none;
 }
 
