@@ -955,8 +955,8 @@ export default function Home() {
                               <p>{formatBucketLabel(bucket)}</p>
                               <div className="bucketHeaderRight">
                                 <span className={`statusChip ${statusClass(bucket.status)}`}>{bucket.status}</span>
-                                <span className={`bucketChevron ${isExpanded ? "open" : ""}`} aria-hidden="true">
-                                  ▾
+                                <span className="bucketChevron" aria-hidden="true">
+                                  {isExpanded ? "−" : "+"}
                                 </span>
                               </div>
                             </div>

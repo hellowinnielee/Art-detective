@@ -957,7 +957,7 @@ label {
 
 .bucketHeader p {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #111;
 }
@@ -967,12 +967,11 @@ label {
   align-items: center;
   justify-content: center;
   color: #111;
-  transform: rotate(0deg);
-  transition: transform 0.2s ease;
-}
-
-.bucketChevron.open {
-  transform: rotate(180deg);
+  min-width: 12px;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 400;
+  transform: translateY(-2px);
 }
 
 .bucketDetails {
@@ -999,7 +998,7 @@ label {
 
 .bucketCheck {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: 13px;
   color: #333;
 }
 
