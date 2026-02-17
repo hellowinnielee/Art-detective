@@ -736,29 +736,6 @@ label {
   background: var(--danger);
 }
 
-.scoreSliderThumb {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-  border: 0;
-  box-shadow: none;
-}
-
-.scoreSliderThumb.good {
-  background: var(--ok);
-}
-
-.scoreSliderThumb.review {
-  background: var(--warn);
-}
-
-.scoreSliderThumb.missing {
-  background: var(--danger);
-}
-
 .scoreSliderScale {
   display: flex;
   justify-content: space-between;

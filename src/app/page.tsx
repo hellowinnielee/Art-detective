@@ -917,7 +917,6 @@ export default function Home() {
                     <p className="scoreSliderCaption">Calculated from listing signals</p>
                     <div className="scoreSlider" aria-hidden="true">
                       <div className={`scoreSliderFill ${scoreClass}`} style={{ width: `${clampedSnapshotScore}%` }} />
-                      <span className={`scoreSliderThumb ${scoreClass}`} style={{ left: `${clampedSnapshotScore}%` }} />
                     </div>
                     <div className="scoreSliderScale" aria-hidden="true">
                       <span>0%</span>
