@@ -38,6 +38,8 @@ type SnapshotResponse = {
     dimensions: string;
     price?: number;
     currency: string;
+    medium: string;
+    yearOfRelease: string;
   };
 };
 
@@ -64,6 +66,14 @@ type UndoDeleteState = {
 
 const SNAPSHOT_CACHE_KEY = "art_detective_snapshot_cache_v1";
 const WATCHLIST_CACHE_KEY_PREFIX = "art_detective_watchlist_";
+const MISSING_ARTWORK_DETAIL_VALUES = new Set([
+  "not provided",
+  "price not available",
+  "unknown artist",
+  "untitled",
+  "unknown",
+  "n/a",
+]);
 
 function formatArtistName(input: string): string {
   return input
@@ -107,6 +117,12 @@ function formatSourceLabel(source: string): string {
 function formatPrice(value?: number, currency?: string): string {
   if (typeof value !== "number") return "Price unavailable";
   return `${symbol(currency)}${value.toLocaleString()}`;
+}
+
+function isMissingArtworkDetail(value?: string | null): boolean {
+  if (!value) return true;
+  const normalized = decodeHtmlEntities(value).trim().toLowerCase();
+  return !normalized || MISSING_ARTWORK_DETAIL_VALUES.has(normalized);
 }
 
 function discoverFromFollowing(artists: string[]): DiscoverItem[] {
@@ -406,6 +422,24 @@ export default function Home() {
     if (score >= 50) return "review";
     return "missing";
   }, [snapshot?.snapshot.score]);
+  const snapshotScore = snapshot?.snapshot.score ?? 0;
+  const clampedSnapshotScore = Math.min(100, Math.max(0, snapshotScore));
+  const artworkDetailRows = snapshot
+    ? [
+        { label: "Artist", value: decodeHtmlEntities(snapshot.artworkOverview.artistName) },
+        { label: "Title", value: decodeHtmlEntities(snapshot.artworkOverview.title) },
+        { label: "Size", value: decodeHtmlEntities(snapshot.artworkOverview.dimensions) },
+        {
+          label: "Price",
+          value:
+            typeof snapshot.artworkOverview.price === "number"
+              ? `${symbol(snapshot.artworkOverview.currency)}${snapshot.artworkOverview.price.toLocaleString()}`
+              : null,
+        },
+        { label: "Medium", value: decodeHtmlEntities(snapshot.artworkOverview.medium) },
+        { label: "Year of release", value: decodeHtmlEntities(snapshot.artworkOverview.yearOfRelease) },
+      ]
+    : [];
 
   function handleListingUrlChange(nextValue: string) {
     setUrl(nextValue);
@@ -863,36 +897,35 @@ export default function Home() {
                   </div>
                   <h3 className="snapshotDetailsHeading">DETAILS OF ARTWORK</h3>
                   <div className="snapshotDetailList" aria-label="Artwork details">
-                    <div className="snapshotDetailRow">
-                      <span className="snapshotDetailLabel">Artist</span>
-                      <span className="snapshotDetailValue">
-                        {decodeHtmlEntities(snapshot.artworkOverview.artistName)}
-                      </span>
+                    {artworkDetailRows.map((row) => (
+                      <div key={row.label} className="snapshotDetailRow">
+                        <span className="snapshotDetailLabel">{row.label}</span>
+                        <span className="snapshotDetailValue">
+                          {isMissingArtworkDetail(row.value) ? (
+                            <span className="snapshotDetailPlaceholder" role="img" aria-label="Not provided">
+                              <span className="srOnly">Not provided</span>
+                            </span>
+                          ) : (
+                            row.value
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="scoreSliderBlock" role="group" aria-label="Confidence score, read-only">
+                    <p className="scoreSliderValue">Confidence: {clampedSnapshotScore}%</p>
+                    <p className="scoreSliderCaption">Calculated from listing signals</p>
+                    <div className="scoreSlider" aria-hidden="true">
+                      <div className={`scoreSliderFill ${scoreClass}`} style={{ width: `${clampedSnapshotScore}%` }} />
+                      <span className={`scoreSliderThumb ${scoreClass}`} style={{ left: `${clampedSnapshotScore}%` }} />
                     </div>
-                    <div className="snapshotDetailRow">
-                      <span className="snapshotDetailLabel">Title</span>
-                      <span className="snapshotDetailValue">
-                        {decodeHtmlEntities(snapshot.artworkOverview.title)}
-                      </span>
-                    </div>
-                    <div className="snapshotDetailRow">
-                      <span className="snapshotDetailLabel">Size</span>
-                      <span className="snapshotDetailValue">
-                        {decodeHtmlEntities(snapshot.artworkOverview.dimensions)}
-                      </span>
-                    </div>
-                    <div className="snapshotDetailRow">
-                      <span className="snapshotDetailLabel">Price</span>
-                      <span className="snapshotDetailValue">
-                        {typeof snapshot.artworkOverview.price === "number"
-                          ? `${symbol(snapshot.artworkOverview.currency)}${snapshot.artworkOverview.price.toLocaleString()}`
-                          : "Price not available"}
-                      </span>
+                    <div className="scoreSliderScale" aria-hidden="true">
+                      <span>0%</span>
+                      <span>100%</span>
                     </div>
                   </div>
-                  <p className={`score ${scoreClass}`}>{snapshot.snapshot.score}/100</p>
                   <p className="snapshotAction">
-                    Recommended action:{" "}
+                    RECOMMENDED ACTION:{" "}
                     <span className={`statusChip ${statusClass(snapshot.snapshot.status)}`}>{snapshot.snapshot.recommendedAction}</span>
                   </p>
 

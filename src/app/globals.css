@@ -683,6 +683,91 @@ label {
   font-size: 30px;
   font-weight: 700;
 }
+
+.scoreSliderBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  margin-bottom: 8px;
+}
+
+.scoreSliderValue {
+  margin: 0;
+  color: #111;
+  font-size: 20px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.scoreSliderCaption {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.scoreSlider {
+  position: relative;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  cursor: default;
+  user-select: none;
+}
+
+.scoreSliderFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+}
+
+.scoreSliderFill.good {
+  background: var(--ok);
+}
+
+.scoreSliderFill.review {
+  background: var(--warn);
+}
+
+.scoreSliderFill.missing {
+  background: var(--danger);
+}
+
+.scoreSliderThumb {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  border: 0;
+  box-shadow: none;
+}
+
+.scoreSliderThumb.good {
+  background: var(--ok);
+}
+
+.scoreSliderThumb.review {
+  background: var(--warn);
+}
+
+.scoreSliderThumb.missing {
+  background: var(--danger);
+}
+
+.scoreSliderScale {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #3a3a3a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .good {
   color: var(--ok);
 }
@@ -721,7 +806,7 @@ label {
 }
 
 .snapshotDetailsHeading {
-  margin: 10px 0 6px;
+  margin: 10px 0 2px;
   font-size: 14px;
   line-height: 1.1;
   font-weight: 700 !important;
@@ -752,11 +837,34 @@ label {
 
 .snapshotDetailValue {
   flex: 1 1 auto;
+  display: flex;
+  align-items: center;
   min-width: 0;
   font-size: 14px;
   font-weight: 500;
   color: #111;
   word-break: break-word;
+}
+
+.snapshotDetailPlaceholder {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  height: 16px;
+  background: #000;
+  transform: translateY(2px);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .bucketGrid {

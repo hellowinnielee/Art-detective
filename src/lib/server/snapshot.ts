@@ -338,7 +338,7 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
     fetchedAt: new Date().toISOString(),
     currency: detectedCurrency,
     price,
-    artwork: { title, dimensions },
+    artwork: { title, dimensions, medium: undefined, yearOfRelease: undefined },
     artist: { name: artist },
     visual: { imageUrls },
   };
@@ -362,6 +362,8 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
       dimensions: listing.artwork.dimensions ?? "Not provided",
       price: listing.price,
       currency: listing.currency,
+      medium: listing.artwork.medium ?? "Not provided",
+      yearOfRelease: listing.artwork.yearOfRelease ?? "Not provided",
     },
   };
 }

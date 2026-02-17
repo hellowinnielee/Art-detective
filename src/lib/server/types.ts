@@ -27,6 +27,8 @@ export interface ListingRecord {
   artwork: {
     title?: string;
     dimensions?: string;
+    medium?: string;
+    yearOfRelease?: string;
   };
   artist: {
     name?: string;
@@ -54,5 +56,7 @@ export interface SnapshotResponseBody {
     dimensions: string;
     price?: number;
     currency: string;
+    medium: string;
+    yearOfRelease: string;
   };
 }
