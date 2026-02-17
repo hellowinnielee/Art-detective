@@ -1213,7 +1213,7 @@ button.tiny:active:not(:disabled) {
   border-top: none;
   border-radius: 0 0 48px 48px;
   padding: 6px 8px 8px;
-  gap: 12px;
+  gap: 32px;
 }
 
 .tab {
