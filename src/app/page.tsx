@@ -749,16 +749,17 @@ export default function Home() {
                       "Loading..."
                     ) : (
                       <span className="scanButtonLabel">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                          <path d="M10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5Z" fill="currentColor"/>
-                          <path d="M3.33333 10C4.16667 6.66667 6.66667 4.16667 10 4.16667C13.3333 4.16667 15.8333 6.66667 16.6667 10C15.8333 13.3333 13.3333 15.8333 10 15.8333C6.66667 15.8333 4.16667 13.3333 3.33333 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
                         Scan listing
                       </span>
                     )}
                   </button>
                   {canViewLastSnapshot ? (
-                    <button type="button" className="otpButton" onClick={viewLastSnapshot} disabled={loadingSnapshot}>
+                    <button
+                      type="button"
+                      className="otpButton viewLastSnapshotButton"
+                      onClick={viewLastSnapshot}
+                      disabled={loadingSnapshot}
+                    >
                       View last snapshot
                     </button>
                   ) : null}
@@ -985,7 +986,7 @@ export default function Home() {
               <section className="card">
               {following.map((artist) => (
                 <div key={artist} className="followRow">
-                  <span>+ {decodeHtmlEntities(artist)}</span>
+                  <span>{decodeHtmlEntities(artist)}</span>
                   <button className="tiny" onClick={() => unfollowArtist(artist)}>
                     Unfollow
                   </button>

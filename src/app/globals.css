@@ -567,9 +567,9 @@ button.savedStateButton:active {
   transition: background-color 120ms ease, border-color 120ms ease;
 }
 
-.otpButton:hover {
-  background: #f1e4cf;
-  border-color: #8f1617;
+button.otpButton:hover:not(:disabled) {
+  background: #e2c89c;
+  border-color: #7d1919;
 }
 
 .otpButton:active {
@@ -934,6 +934,11 @@ label {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.followRow span {
+  font-size: 16px;
+  font-weight: 700;
 }
 
 button.tiny {
