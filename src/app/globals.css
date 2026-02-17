@@ -1125,6 +1125,288 @@ label {
   color: #b42318;
 }
 
+.discoverSearchCard {
+  padding-bottom: 8px;
+}
+
+.curatedSectionCard {
+  padding: 4px 0 0;
+  gap: 10px;
+}
+
+.curatedHeader {
+  padding: 0 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.curatedHeadingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.curatedTitle {
+  margin: 0;
+  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-size: 24px;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+
+.curatedSubtitle {
+  margin: 8px 0 0;
+  color: #2f2f2f;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.curatedSortButton {
+  width: fit-content;
+  margin-top: 2px;
+  padding: 2px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.curatedSortButton svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.curatedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 14px 4px;
+}
+
+.curatedArtworkCard {
+  border: 1px solid rgba(17, 17, 17, 0.52);
+  background: var(--surface-0);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.curatedArtworkImage,
+.curatedArtworkImageFallback {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #dcd5c8;
+}
+
+.curatedArtworkImageFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 12px;
+}
+
+.curatedArtworkTitle {
+  margin: 4px 0 0;
+  color: #111;
+  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-size: 16px;
+  line-height: 1.08;
+  font-weight: 700;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(1.08em * 2);
+}
+
+.curatedArtworkArtist {
+  margin: 0;
+  color: #111;
+  font-size: 15px;
+  line-height: 1.15;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 1.15em;
+}
+
+.curatedArtworkSource,
+.curatedArtworkPrice {
+  margin: 0;
+  color: #252525;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 1.2em;
+}
+
+.curatedArtworkStatus {
+  margin: auto 0 0;
+  padding-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #252525;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.curatedStatusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.curatedStatusDot.isAvailable {
+  background: #5cb397;
+}
+
+.curatedStatusDot.isUnavailable {
+  background: #b5493f;
+}
+
+.discoverArtistsCard {
+  padding: 4px 0 0;
+  gap: 10px;
+}
+
+.discoverArtistsTitle {
+  margin: 0;
+  padding: 0 14px;
+  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-size: 24px;
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+
+.discoverFilterButton {
+  width: fit-content;
+  margin-left: 14px;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #2f2f2f;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.discoverFilterButton svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.discoverFilterButton:hover:not(:disabled),
+.discoverFilterButton:active:not(:disabled) {
+  background: transparent;
+  color: #2f2f2f;
+  transform: none;
+}
+
+.discoverArtistGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 14px 4px;
+}
+
+.discoverArtistCard {
+  border: 1px solid rgba(17, 17, 17, 0.52);
+  background: var(--surface-0);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discoverArtistImage,
+.discoverArtistImageFallback {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #dcd5c8;
+}
+
+.discoverArtistImageFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.discoverArtistName {
+  margin: 0;
+  color: #111;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.discoverFollowButton {
+  width: fit-content;
+  min-width: 116px;
+  min-height: 40px;
+  padding: 0 22px;
+  border-radius: 999px !important;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 500;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.discoverFollowButton.isFollowed {
+  background: var(--accent);
+  color: var(--surface-0);
+  border-color: var(--accent);
+}
+
+.discoverFollowButton.isUnfollowed {
+  background: #fff;
+  color: var(--accent);
+  border-color: #fff;
+}
+
+.discoverFollowButton.isFollowed:hover:not(:disabled),
+.discoverFollowButton.isFollowed:active:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.discoverFollowButton.isUnfollowed:hover:not(:disabled),
+.discoverFollowButton.isUnfollowed:active:not(:disabled) {
+  background: #fff;
+  border-color: #fff;
+}
+
 .followRow {
   display: flex;
   justify-content: space-between;

@@ -8,6 +8,17 @@ export type DiscoverItem = {
   currency?: string;
 };
 
+export type CuratedArtworkItem = {
+  id: string;
+  artist: string;
+  title: string;
+  source: string;
+  price?: number;
+  currency?: string;
+  imageUrl?: string;
+  isAvailable: boolean;
+};
+
 export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
   {
     id: "mock-1",
@@ -16,7 +27,7 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Artsy Gallery",
     price: 4500,
     currency: "USD",
-    imageUrl: "/artworks/kaws.jpg",
+    imageUrl: "/artists/artist-kaws.jpg",
   },
   {
     id: "mock-2",
@@ -25,7 +36,7 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Sotheby's Contemporary",
     price: 5000,
     currency: "GBP",
-    imageUrl: "/artworks/kusama.jpg",
+    imageUrl: "/artists/artist-kusama.jpg",
   },
   {
     id: "mock-3",
@@ -34,7 +45,7 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Phillips Auction House",
     price: 15000,
     currency: "GBP",
-    imageUrl: "/artworks/banksy.jpg",
+    imageUrl: "/artists/artist-banksy.jpg",
   },
   {
     id: "mock-4",
@@ -43,7 +54,7 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Gagosian Gallery",
     price: 8500,
     currency: "GBP",
-    imageUrl: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=500&fit=crop",
+    imageUrl: "/artists/artist-murakami.jpg",
   },
   {
     id: "mock-5",
@@ -52,7 +63,7 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Christie's New York",
     price: 35000,
     currency: "GBP",
-    imageUrl: "https://images.unsplash.com/photo-1577083552431-6e5fd01988ec?w=400&h=500&fit=crop",
+    imageUrl: "/artists/artist-jeffkoons.jpg",
   },
   {
     id: "mock-6",
@@ -61,6 +72,49 @@ export const DISCOVER_MOCK_ITEMS: DiscoverItem[] = [
     shopName: "Lisson Gallery London",
     price: 1200,
     currency: "GBP",
-    imageUrl: "https://images.unsplash.com/photo-1579541814924-49fef17c5be5?w=400&h=500&fit=crop",
+    imageUrl: "/artists/artist-aiweiwei.jpg",
+  },
+];
+
+export const CURATED_ARTWORKS_MOCK_ITEMS: CuratedArtworkItem[] = [
+  {
+    id: "curated-1",
+    artist: "Yayoi Kusama",
+    title: "A Pumpkin BY",
+    source: "Fairart",
+    price: 5680,
+    currency: "GBP",
+    imageUrl: "/artworks/kusama.jpg",
+    isAvailable: true,
+  },
+  {
+    id: "curated-2",
+    artist: "Banksy",
+    title: "Girl with Balloon (Signed)",
+    source: "Artsy",
+    price: 25000,
+    currency: "GBP",
+    imageUrl: "/artworks/banksy.jpg",
+    isAvailable: true,
+  },
+  {
+    id: "curated-3",
+    artist: "Ai Weiwei",
+    title: "Coca-Cola Glass Vase (Red)",
+    source: "Perrotin",
+    price: 2400,
+    currency: "GBP",
+    imageUrl: "/artists/artist-aiweiwei.jpg",
+    isAvailable: true,
+  },
+  {
+    id: "curated-4",
+    artist: "Kaws",
+    title: "Presenting The Past",
+    source: "Ebay",
+    price: 12000,
+    currency: "GBP",
+    imageUrl: "/artworks/kaws.jpg",
+    isAvailable: true,
   },
 ];

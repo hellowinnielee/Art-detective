@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image, { type ImageLoaderProps } from "next/image";
 import { apiRequest } from "@/lib/client/api";
 import { clearSession, getSession, saveSession } from "@/lib/client/session";
-import { DISCOVER_MOCK_ITEMS, type DiscoverItem } from "@/lib/shared/discoverMock";
+import { CURATED_ARTWORKS_MOCK_ITEMS, DISCOVER_MOCK_ITEMS } from "@/lib/shared/discoverMock";
 
 type Tab = "Discover" | "Detective" | "Dossier" | "Profile";
 type DetectiveView = "home" | "snapshot";
@@ -136,15 +136,17 @@ function isInterruptionText(value?: string | null): boolean {
   return /pardon our interruption/i.test(decodeHtmlEntities(value));
 }
 
-function discoverFromFollowing(artists: string[]): DiscoverItem[] {
-  const followed = artists.map((a) => a.trim().toLowerCase()).filter(Boolean);
-  if (!followed.length) return [];
-  return DISCOVER_MOCK_ITEMS.filter((item) =>
-    followed.some((artist) => {
-      const candidate = item.artist.toLowerCase();
-      return candidate.includes(artist) || artist.includes(candidate);
-    })
-  );
+function discoverArtistCards(searchTerm: string) {
+  const byArtist = new Map<string, { artist: string; imageUrl?: string }>();
+  for (const item of DISCOVER_MOCK_ITEMS) {
+    const key = item.artist.trim().toLowerCase();
+    if (!key || byArtist.has(key)) continue;
+    byArtist.set(key, { artist: item.artist, imageUrl: item.imageUrl });
+  }
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  return Array.from(byArtist.values())
+    .filter((artistCard) => (normalizedSearch ? artistCard.artist.toLowerCase().includes(normalizedSearch) : true))
+    .sort((a, b) => a.artist.localeCompare(b.artist, undefined, { sensitivity: "base" }));
 }
 
 function resolveCanonicalArtistName(input: string): string {
@@ -362,7 +364,6 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [artistInput, setArtistInput] = useState("");
   const [following, setFollowing] = useState<string[]>([]);
-  const [discoverItems, setDiscoverItems] = useState<DiscoverItem[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [snapshot, setSnapshot] = useState<SnapshotResponse | null>(null);
   const [reportSnapshot, setReportSnapshot] = useState<SnapshotResponse | null>(null);
@@ -394,12 +395,6 @@ export default function Home() {
     // Intentionally run only once on first load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (authed && tab === "Discover") {
-      refreshDiscover();
-    }
-  }, [authed, tab]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !authed) return;
@@ -485,6 +480,8 @@ export default function Home() {
         { label: "Year of release", value: decodeHtmlEntities(activeSnapshot.artworkOverview.yearOfRelease) },
       ]
     : [];
+  const discoverCards = useMemo(() => discoverArtistCards(artistInput), [artistInput]);
+  const followedArtists = useMemo(() => new Set(following.map((artist) => artist.trim().toLowerCase())), [following]);
 
   function handleListingUrlChange(nextValue: string) {
     setUrl(nextValue);
@@ -518,10 +515,6 @@ export default function Home() {
     return data.artists;
   }
 
-  function refreshDiscover(artists = following) {
-    setDiscoverItems(discoverFromFollowing(artists));
-  }
-
   async function refreshSaved(cacheEmail = email) {
     const w = await apiRequest<{ items: WatchlistItem[] }>("/api/watchlist");
     const cached = readWatchlistCache(cacheEmail);
@@ -531,8 +524,7 @@ export default function Home() {
   }
 
   async function refreshAll(cacheEmail = email) {
-    const artists = await refreshFollowing();
-    refreshDiscover(artists);
+    await refreshFollowing();
     await refreshSaved(cacheEmail);
   }
 
@@ -587,7 +579,6 @@ export default function Home() {
     setReportCachedSnapshotAt(null);
     setLastAnalyseSnapshotKey("");
     setFollowing([]);
-    setDiscoverItems([]);
     setWatchlist([]);
   }
 
@@ -664,14 +655,12 @@ export default function Home() {
     }
   }
 
-  async function followArtist() {
-    const artist = resolveCanonicalArtistName(artistInput);
+  async function followArtistByName(artistName: string) {
+    const artist = resolveCanonicalArtistName(artistName);
     if (!artist) return;
     try {
       await apiRequest(`/api/follow/${encodeURIComponent(artist)}`, { method: "POST" });
-      setArtistInput("");
-      const artists = await refreshFollowing();
-      refreshDiscover(artists);
+      await refreshFollowing();
     } catch (err) {
       handleApiError(err);
     }
@@ -680,11 +669,20 @@ export default function Home() {
   async function unfollowArtist(artist: string) {
     try {
       await apiRequest(`/api/follow/${encodeURIComponent(artist)}`, { method: "DELETE" });
-      const artists = await refreshFollowing();
-      refreshDiscover(artists);
+      await refreshFollowing();
     } catch (err) {
       handleApiError(err);
     }
+  }
+
+  async function toggleFollowArtist(artist: string) {
+    const normalizedArtist = artist.trim().toLowerCase();
+    if (!normalizedArtist) return;
+    if (followedArtists.has(normalizedArtist)) {
+      await unfollowArtist(artist);
+      return;
+    }
+    await followArtistByName(artist);
   }
 
   async function saveListing(listingUrl: string = url, syncAnalyseUrl = true) {
@@ -1043,6 +1041,52 @@ export default function Home() {
                   ) : null}
                 </div>
               </section>
+              <section className="card curatedSectionCard" aria-label="Curated artworks">
+                <div className="curatedHeader">
+                  <div className="curatedHeadingGroup">
+                    <h2 className="curatedTitle">Curated for you</h2>
+                    <p className="curatedSubtitle">Based on the artists you follow</p>
+                  </div>
+                  <button type="button" className="sortButton curatedSortButton" aria-label="Sort curated artworks">
+                    <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
+                      <line x1="4" y1="7" x2="20" y2="7" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="17" x2="20" y2="17" />
+                      <circle cx="9" cy="7" r="2" />
+                      <circle cx="15" cy="12" r="2" />
+                      <circle cx="11" cy="17" r="2" />
+                    </svg>
+                    Sort
+                  </button>
+                </div>
+                <div className="curatedGrid">
+                  {CURATED_ARTWORKS_MOCK_ITEMS.map((item) => (
+                    <article key={item.id} className="curatedArtworkCard">
+                      {item.imageUrl ? (
+                        <Image
+                          loader={passthroughImageLoader}
+                          unoptimized
+                          src={item.imageUrl}
+                          alt={`${decodeHtmlEntities(item.title)} by ${decodeHtmlEntities(item.artist)}`}
+                          width={300}
+                          height={300}
+                          className="curatedArtworkImage"
+                        />
+                      ) : (
+                        <div className="curatedArtworkImageFallback">No image</div>
+                      )}
+                      <p className="curatedArtworkTitle">{decodeHtmlEntities(item.title)}</p>
+                      <p className="curatedArtworkArtist">{decodeHtmlEntities(item.artist)}</p>
+                      <p className="curatedArtworkSource">{formatSourceLabel(item.source)}</p>
+                      <p className="curatedArtworkPrice">{formatPrice(item.price, item.currency)}</p>
+                      <p className="curatedArtworkStatus">
+                        <span className={`curatedStatusDot ${item.isAvailable ? "isAvailable" : "isUnavailable"}`} />
+                        {item.isAvailable ? "Available" : "Unavailable"}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
               {shouldShowInlineReport || shouldShowInlineErrorReport ? (
                 <section className="card">
                   {shouldShowInlineErrorReport ? artworkErrorCard : artworkReportCard}
@@ -1140,57 +1184,71 @@ export default function Home() {
                 <div className="analyseBadge">Discover</div>
               </section>
 
-              <section className="card analyseInputCard">
-                <input
-                  value={artistInput}
-                  onChange={(e) => setArtistInput(e.target.value)}
-                  placeholder="Enter artist name"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      followArtist().catch(() => undefined);
-                    }
-                  }}
-                />
-                <div className="row">
-                  <button className="analyseScanButton" onClick={followArtist} disabled={!artistInput.trim()}>
-                    Follow
-                  </button>
+              <section className="card analyseInputCard discoverSearchCard">
+                <div className="listingInputRow">
+                  <input
+                    value={artistInput}
+                    onChange={(e) => setArtistInput(e.target.value)}
+                    placeholder="Search artist"
+                    aria-label="Search artist"
+                  />
+                  {artistInput ? (
+                    <button
+                      type="button"
+                      className="clearInputButton"
+                      onClick={() => setArtistInput("")}
+                      aria-label="Clear artist search"
+                    >
+                      ×
+                    </button>
+                  ) : null}
                 </div>
               </section>
 
-              <section className="card">
-              {following.map((artist) => (
-                <div key={artist} className="followRow">
-                  <span>{decodeHtmlEntities(artist)}</span>
-                  <button className="tiny" onClick={() => unfollowArtist(artist)}>
-                    Unfollow
-                  </button>
+              <section className="card discoverArtistsCard">
+                <h2 className="discoverArtistsTitle">Artists</h2>
+                <button type="button" className="discoverFilterButton" aria-label="Filter artists">
+                  <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="20" y2="17" />
+                    <circle cx="9" cy="7" r="2" />
+                    <circle cx="15" cy="12" r="2" />
+                    <circle cx="11" cy="17" r="2" />
+                  </svg>
+                  Filter
+                </button>
+                {discoverCards.length === 0 ? <p className="sub">No artists found.</p> : null}
+                <div className="discoverArtistGrid">
+                  {discoverCards.map((item) => {
+                    const isFollowed = followedArtists.has(item.artist.trim().toLowerCase());
+                    return (
+                      <article key={item.artist} className="discoverArtistCard">
+                        {item.imageUrl ? (
+                          <Image
+                            loader={passthroughImageLoader}
+                            unoptimized
+                            src={item.imageUrl}
+                            alt={item.artist}
+                            width={220}
+                            height={220}
+                            className="discoverArtistImage"
+                          />
+                        ) : (
+                          <div className="discoverArtistImageFallback">No image</div>
+                        )}
+                        <p className="discoverArtistName">{decodeHtmlEntities(item.artist)}</p>
+                        <button
+                          type="button"
+                          className={`discoverFollowButton ${isFollowed ? "isFollowed" : "isUnfollowed"}`}
+                          onClick={() => toggleFollowArtist(item.artist).catch(() => undefined)}
+                        >
+                          {isFollowed ? "Followed" : "Follow"}
+                        </button>
+                      </article>
+                    );
+                  })}
                 </div>
-              ))}
-              {discoverItems.map((item) => (
-                <div key={item.id} className="discoverItem">
-                  {item.imageUrl ? (
-                    <Image
-                      loader={passthroughImageLoader}
-                      unoptimized
-                      src={item.imageUrl}
-                      alt={item.title}
-                      width={72}
-                      height={72}
-                      className="discoverThumb"
-                    />
-                  ) : (
-                    <div className="thumbFallback">No image</div>
-                  )}
-                  <div>
-                    <strong>{decodeHtmlEntities(item.title)}</strong>
-                    <p>{decodeHtmlEntities(item.artist)}</p>
-                    {item.shopName ? <p>{decodeHtmlEntities(item.shopName)}</p> : null}
-                    {typeof item.price === "number" ? <p>{formatPrice(item.price, item.currency)}</p> : null}
-                  </div>
-                </div>
-              ))}
               </section>
             </>
           ) : null}
