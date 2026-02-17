@@ -981,9 +981,9 @@ export default function Home() {
                   <aside className="aiWarning" aria-label="AI warning">
                     <span className="aiWarningIcon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                        <path d="M12 2.8 5.2 5.4V11c0 4.5 2.9 8.6 6.8 9.9 3.9-1.3 6.8-5.4 6.8-9.9V5.4L12 2.8Z" />
-                        <path d="M12 8.2v5.6" />
-                        <circle cx="12" cy="16.4" r="0.7" />
+                        <path d="M12 2.4 5.2 5v5.3c0 4.6 2.8 8.9 6.8 10.3 4-1.4 6.8-5.7 6.8-10.3V5L12 2.4Z" />
+                        <path d="M12 8.2v5.3" />
+                        <circle cx="12" cy="16.3" r="0.8" />
                       </svg>
                     </span>
                     <p className="aiWarningText">
