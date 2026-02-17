@@ -131,6 +131,11 @@ function isMissingArtworkDetail(value?: string | null): boolean {
   return !normalized || MISSING_ARTWORK_DETAIL_VALUES.has(normalized);
 }
 
+function isInterruptionText(value?: string | null): boolean {
+  if (!value) return false;
+  return /pardon our interruption/i.test(decodeHtmlEntities(value));
+}
+
 function discoverFromFollowing(artists: string[]): DiscoverItem[] {
   const followed = artists.map((a) => a.trim().toLowerCase()).filter(Boolean);
   if (!followed.length) return [];
@@ -651,8 +656,7 @@ export default function Home() {
         setSavedListingUrl(normalized);
         setError(`${(err as Error).message} Showing last saved snapshot for this listing.`);
       } else {
-        setDetectiveView("home");
-        setCachedSnapshotAt(null);
+        setReportCachedSnapshotAt(null);
         handleApiError(err);
       }
     } finally {
@@ -761,6 +765,26 @@ export default function Home() {
   const saveButtonLabel = savingListing ? "Saving..." : isCurrentListingSaved ? "Listing saved" : "Save Listing";
   const shouldShowInlineReport =
     authed && tab === "Detective" && detectiveView === "home" && Boolean(normalizedUrl) && (loadingSnapshot || Boolean(snapshot));
+  const shouldShowInlineErrorReport =
+    authed &&
+    tab === "Detective" &&
+    detectiveView === "home" &&
+    Boolean(normalizedUrl) &&
+    !loadingSnapshot &&
+    !snapshot &&
+    Boolean(error);
+  const shouldShowSnapshotErrorReport =
+    authed &&
+    detectiveView === "snapshot" &&
+    (tab === "Detective" || tab === "Dossier") &&
+    Boolean(activeNormalizedUrl) &&
+    !loadingSnapshot &&
+    !reportSnapshot &&
+    Boolean(error);
+  const showAwkwardFallback =
+    Boolean(activeSnapshot) &&
+    (isInterruptionText(activeSnapshot?.artworkOverview.artistName) ||
+      isInterruptionText(activeSnapshot?.artworkOverview.title));
 
   function viewLastSnapshot() {
     if (!lastAnalyseSnapshotKey || !lastAnalyseSnapshot) return;
@@ -777,20 +801,28 @@ export default function Home() {
         <p className="sub cachedSnapshotNote">Showing last saved snapshot from {formatCachedTime(activeCachedSnapshotAt)}.</p>
       ) : null}
       <div className="carousel">
-        {(activeSnapshot.artworkOverview.imageUrls.length ? activeSnapshot.artworkOverview.imageUrls : [""]).map((img, i) =>
-          img ? (
-            <Image
-              key={`${img}-${i}`}
-              loader={passthroughImageLoader}
-              unoptimized
-              src={img}
-              alt="Artwork"
-              width={300}
-              height={200}
-              className="snapshotImage"
-            />
-          ) : (
-            <div key={i} className="imgFallback">No main photo</div>
+        {showAwkwardFallback ? (
+          <div className="imgFallback imgErrorFallback">
+            <p className="imgErrorMessage">
+              Well, this is awkward… Intel unavailable. Our apologies, HQ is resolving the issue, stand by.
+            </p>
+          </div>
+        ) : (
+          (activeSnapshot.artworkOverview.imageUrls.length ? activeSnapshot.artworkOverview.imageUrls : [""]).map((img, i) =>
+            img ? (
+              <Image
+                key={`${img}-${i}`}
+                loader={passthroughImageLoader}
+                unoptimized
+                src={img}
+                alt="Artwork"
+                width={300}
+                height={200}
+                className="snapshotImage"
+              />
+            ) : (
+              <div key={i} className="imgFallback">No main photo</div>
+            )
           )
         )}
       </div>
@@ -800,7 +832,7 @@ export default function Home() {
           <div key={row.label} className="snapshotDetailRow">
             <span className="snapshotDetailLabel">{row.label}</span>
             <span className="snapshotDetailValue">
-              {isMissingArtworkDetail(row.value) ? (
+              {((showAwkwardFallback && (row.label === "Artist" || row.label === "Title")) || isMissingArtworkDetail(row.value)) ? (
                 <span className="snapshotDetailPlaceholder" role="img" aria-label="Not provided">
                   <span className="srOnly">Not provided</span>
                 </span>
@@ -812,7 +844,7 @@ export default function Home() {
         ))}
       </div>
       <div className="scoreSliderBlock" role="group" aria-label="Confidence score, read-only">
-        <p className="scoreSliderValue">Confidence: {clampedSnapshotScore}%</p>
+        <p className="scoreSliderValue">Confidence rating: {clampedSnapshotScore}%</p>
         <p className="scoreSliderCaption">Calculated from listing signals</p>
         <div className="scoreSlider" aria-hidden="true">
           <div className={`scoreSliderFill ${scoreClass}`} style={{ width: `${clampedSnapshotScore}%` }} />
@@ -852,7 +884,7 @@ export default function Home() {
               {isExpanded ? (
                 <div id={`bucket-panel-${bucket.key}`} className="bucketDetails" aria-hidden={false}>
                   <p className="bucketMeta">
-                    Confidence: {confidenceLabel(bucket.status)} · Weight {bucket.weight}%
+                    Confidence rating: {confidenceLabel(bucket.status)} · Weight {bucket.weight}%
                   </p>
                   {bucket.checks.slice(0, 3).map((check) => (
                     <p key={check.label} className="bucketCheck">
@@ -896,6 +928,31 @@ export default function Home() {
     </>
   ) : (
     <p className="sub">Building snapshot...</p>
+  );
+
+  const artworkErrorCard = (
+    <>
+      <div className="carousel">
+        <div className="imgFallback imgErrorFallback">
+          <p className="imgErrorMessage">
+            Well, this is awkward… Intel unavailable. Our apologies, HQ is resolving the issue, stand by.
+          </p>
+        </div>
+      </div>
+      <h3 className="snapshotDetailsHeading">DETAILS OF ARTWORK</h3>
+      <div className="snapshotDetailList" aria-label="Artwork details unavailable">
+        {["Artist", "Title"].map((label) => (
+          <div key={label} className="snapshotDetailRow">
+            <span className="snapshotDetailLabel">{label}</span>
+            <span className="snapshotDetailValue">
+              <span className="snapshotDetailPlaceholder" role="img" aria-label="Not provided">
+                <span className="srOnly">Not provided</span>
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 
   return (
@@ -986,9 +1043,9 @@ export default function Home() {
                   ) : null}
                 </div>
               </section>
-              {shouldShowInlineReport ? (
+              {shouldShowInlineReport || shouldShowInlineErrorReport ? (
                 <section className="card">
-                  {artworkReportCard}
+                  {shouldShowInlineErrorReport ? artworkErrorCard : artworkReportCard}
                 </section>
               ) : null}
             </>
@@ -1072,7 +1129,7 @@ export default function Home() {
                 <div className="analyseBadge artworkReportBadge">Artwork report</div>
               </section>
               <section className="card">
-                {artworkReportCard}
+                {shouldShowSnapshotErrorReport ? artworkErrorCard : artworkReportCard}
               </section>
             </>
           ) : null}
