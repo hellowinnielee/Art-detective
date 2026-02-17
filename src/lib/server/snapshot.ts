@@ -248,7 +248,7 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
   const baseBuckets: SnapshotBucket[] = [
     {
       key: "authenticity",
-      label: "Authenticity signals",
+      label: "Authenticity",
       weight: 35,
       checks: authenticityChecks,
       score: computeBucketScore(authenticityChecks),

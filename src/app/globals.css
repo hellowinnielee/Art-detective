@@ -756,7 +756,7 @@ label {
 }
 
 .snapshotAction {
-  margin: 0;
+  margin: 0 0 12px;
   font-size: 14px;
   font-weight: 700;
   color: #111;
@@ -850,9 +850,62 @@ label {
   gap: 8px;
 }
 
+.aiWarning {
+  margin: -12px 0 0;
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+  background: #f9f0e1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 0;
+}
+
+.aiWarningIcon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  color: #7f2a2a;
+}
+
+.aiWarningIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aiWarningText {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1.25;
+  color: #111;
+}
+
+@media (max-width: 640px) {
+  .aiWarning {
+    gap: 8px;
+    padding: 4px 12px 4px 0;
+  }
+
+  .aiWarningIcon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+}
+
 .bucketCard {
   border: 1px solid #111;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 10px;
   background: #f9f0e1;
   transition: border-color 140ms ease;
@@ -886,7 +939,7 @@ label {
 .bucketToggle:focus-visible {
   outline: 2px solid #8f93ff;
   outline-offset: 3px;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .bucketHeader {
@@ -941,12 +994,6 @@ label {
 .bucketMeta {
   margin: 4px 0 0;
   font-size: 11px;
-  color: #333;
-}
-
-.bucketExplain {
-  margin: 4px 0 0;
-  font-size: 12px;
   color: #333;
 }
 

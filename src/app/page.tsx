@@ -119,6 +119,11 @@ function formatPrice(value?: number, currency?: string): string {
   return `${symbol(currency)}${value.toLocaleString()}`;
 }
 
+function formatBucketLabel(bucket: SnapshotResponse["snapshot"]["buckets"][number]): string {
+  if (bucket.key === "authenticity") return "Authenticity";
+  return bucket.label;
+}
+
 function isMissingArtworkDetail(value?: string | null): boolean {
   if (!value) return true;
   const normalized = decodeHtmlEntities(value).trim().toLowerCase();
@@ -151,6 +156,12 @@ function statusClass(status: "Good" | "Needs review" | "Missing evidence"): stri
   if (status === "Good") return "chipGood";
   if (status === "Needs review") return "chipReview";
   return "chipMissing";
+}
+
+function confidenceLabel(status: "Good" | "Needs review" | "Missing evidence"): "High" | "Medium" | "Low" {
+  if (status === "Good") return "High";
+  if (status === "Needs review") return "Medium";
+  return "Low";
 }
 
 function normalizeUrlKey(input: string): string {
@@ -702,7 +713,7 @@ export default function Home() {
   const hasCachedSnapshotForCurrentUrl = Boolean(currentSnapshotKey && getCachedSnapshot(normalizedListingUrl));
   const canViewLastSnapshot = Boolean(currentSnapshotKey && (hasInMemorySnapshotForCurrentUrl || hasCachedSnapshotForCurrentUrl));
   const isCurrentListingSaved = Boolean(normalizedUrl && normalizedUrl === savedListingUrl);
-  const saveButtonLabel = savingListing ? "Saving..." : isCurrentListingSaved ? "Saved ✓" : "Save Listing";
+  const saveButtonLabel = savingListing ? "Saving..." : isCurrentListingSaved ? "Listing saved" : "Save Listing";
 
   function viewLastSnapshot() {
     if (!currentSnapshotKey) return;
@@ -941,7 +952,7 @@ export default function Home() {
                             aria-controls={`bucket-panel-${bucket.key}`}
                           >
                             <div className="bucketHeader">
-                              <p>{bucket.label}</p>
+                              <p>{formatBucketLabel(bucket)}</p>
                               <div className="bucketHeaderRight">
                                 <span className={`statusChip ${statusClass(bucket.status)}`}>{bucket.status}</span>
                                 <span className={`bucketChevron ${isExpanded ? "open" : ""}`} aria-hidden="true">
@@ -953,9 +964,8 @@ export default function Home() {
                           {isExpanded ? (
                             <div id={`bucket-panel-${bucket.key}`} className="bucketDetails" aria-hidden={false}>
                               <p className="bucketMeta">
-                                {bucket.score}/100 · weight {bucket.weight}%
+                                Confidence: {confidenceLabel(bucket.status)} · Weight {bucket.weight}%
                               </p>
-                              <p className="bucketExplain">{bucket.explanation}</p>
                               {bucket.checks.slice(0, 3).map((check) => (
                                 <p key={check.label} className="bucketCheck">
                                   {check.label}: <span className={statusClass(check.value)}>{check.value}</span>
@@ -967,6 +977,19 @@ export default function Home() {
                       );
                     })}
                   </div>
+
+                  <aside className="aiWarning" aria-label="AI warning">
+                    <span className="aiWarningIcon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                        <path d="M12 2.8 5.2 5.4V11c0 4.5 2.9 8.6 6.8 9.9 3.9-1.3 6.8-5.4 6.8-9.9V5.4L12 2.8Z" />
+                        <path d="M12 8.2v5.6" />
+                        <circle cx="12" cy="16.4" r="0.7" />
+                      </svg>
+                    </span>
+                    <p className="aiWarningText">
+                      Art Detective delivers AI-powered intel. Intelligence. Not infallible. Verify before you act.
+                    </p>
+                  </aside>
 
                   <button
                     className={`otpButton snapshotSaveButton ${isCurrentListingSaved ? "savedStateButton" : ""}`}
