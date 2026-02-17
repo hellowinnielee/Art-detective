@@ -14,7 +14,7 @@ type SnapshotResolution =
   | { mode: "live-seeded-placeholder"; data: SnapshotResponseBody }
   | { mode: "placeholder-cache"; data: SnapshotResponseBody };
 
-let placeholderCache: PlaceholderCache | null = null;
+const placeholderCache = new Map<string, PlaceholderCache>();
 
 function normalizeHost(hostname: string): string {
   return hostname.toLowerCase().replace(/^www\./, "");
@@ -69,15 +69,40 @@ export function getSnapshotPlaceholderTargetUrl(): string {
   return configuredTarget || env.SNAPSHOT_PLACEHOLDER_TARGET_URL || DEFAULT_TARGET_URL;
 }
 
+export function getSnapshotPlaceholderTargetUrls(): string[] {
+  const runtimeRawList = process.env.SNAPSHOT_PLACEHOLDER_TARGET_URLS?.trim();
+  const envRawList = env.SNAPSHOT_PLACEHOLDER_TARGET_URLS?.trim();
+  const rawList = runtimeRawList || envRawList;
+  if (!rawList) return [getSnapshotPlaceholderTargetUrl()];
+  const parsed = rawList
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return parsed.length ? parsed : [getSnapshotPlaceholderTargetUrl()];
+}
+
 export function isSnapshotPlaceholderEnabled(): boolean {
   const rawFlag = process.env.SNAPSHOT_PLACEHOLDER_MODE;
   const runtimeFlag = rawFlag ? ["1", "true", "yes", "on"].includes(rawFlag.trim().toLowerCase()) : undefined;
   return process.env.NODE_ENV !== "production" && (runtimeFlag ?? env.SNAPSHOT_PLACEHOLDER_MODE);
 }
 
+function readListingCacheKey(value: string): string {
+  const itemIdFromText = readEbayItemIdFromText(value);
+  if (itemIdFromText) return `ebay:${itemIdFromText}`;
+
+  const parsed = normalizeUrl(value);
+  if (!parsed) return value.trim().toLowerCase();
+
+  const itemId = readEbayItemId(parsed);
+  if (itemId) return `ebay:${itemId}`;
+
+  return `${normalizeHost(parsed.hostname)}${parsed.pathname}`;
+}
+
 export function resetSnapshotPlaceholder(): boolean {
-  const hadCache = Boolean(placeholderCache);
-  placeholderCache = null;
+  const hadCache = placeholderCache.size > 0;
+  placeholderCache.clear();
   return hadCache;
 }
 
@@ -89,20 +114,22 @@ export async function resolveSnapshotWithPlaceholder(
     return { mode: "live", data: await buildSnapshot(url) };
   }
 
-  const targetUrl = getSnapshotPlaceholderTargetUrl();
-  if (!sameTargetListing(url, targetUrl)) {
+  const targetUrl = getSnapshotPlaceholderTargetUrls().find((target) => sameTargetListing(url, target));
+  if (!targetUrl) {
     return { mode: "live", data: await buildSnapshot(url) };
   }
 
-  if (placeholderCache) {
-    return { mode: "placeholder-cache", data: placeholderCache.response };
+  const cacheKey = readListingCacheKey(targetUrl);
+  const cached = placeholderCache.get(cacheKey);
+  if (cached) {
+    return { mode: "placeholder-cache", data: cached.response };
   }
 
   // First call for the configured target runs the real flow, then seeds placeholder data.
   const data = await buildSnapshot(url);
-  placeholderCache = {
+  placeholderCache.set(cacheKey, {
     response: data,
     capturedAt: new Date().toISOString(),
-  };
+  });
   return { mode: "live-seeded-placeholder", data };
 }

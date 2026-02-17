@@ -149,6 +149,7 @@ h2 {
 .err {
   color: #b42318;
   font-size: 13px;
+  margin: 0 14px;
 }
 
 .card {
@@ -194,7 +195,7 @@ textarea {
 
 .listingInputRow input {
   width: 100%;
-  padding-right: 36px;
+  padding-right: 52px;
 }
 
 .clearInputButton {
@@ -202,9 +203,9 @@ textarea {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   border-radius: 999px;
   border: 1px solid #2f2f2f;
   background: #111;
@@ -212,6 +213,10 @@ textarea {
   font-size: 14px;
   line-height: 1;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
   transition: background-color 120ms ease, transform 100ms ease;
 }
 
@@ -318,6 +323,10 @@ button.savedStateButton:active {
   margin-bottom: 16px;
 }
 
+.loginTopBar {
+  height: 210px;
+}
+
 .analyseBadge {
   position: absolute;
   left: 0;
@@ -331,10 +340,30 @@ button.savedStateButton:active {
   background: #e2c89c;
   color: #111;
   font-family: "Stardos Stencil", Georgia, serif;
-  font-size: 28px;
+  font-size: 24px;
   line-height: 23px;
   font-weight: 700;
   box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.loginTopBar .analyseBadge {
+  top: auto;
+  bottom: 0;
+}
+
+.loginLogo {
+  position: absolute;
+  left: 50%;
+  top: 84px;
+  transform: translateX(-50%) rotate(-3deg);
+  margin: 0;
+  width: calc(100% - 24px);
+  max-width: 360px;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .snapshotTopBar {
@@ -514,6 +543,20 @@ button.savedStateButton:active {
   font-size: 12px;
   line-height: 1.25;
   color: #232323;
+}
+
+.profilePortraitWrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 8px;
+}
+
+.profilePortraitImage {
+  width: min(160px, 100%);
+  height: auto;
+  display: block;
+  object-fit: cover;
+  filter: contrast(1.03) saturate(0.9);
 }
 
 .profileSaveButton {

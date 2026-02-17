@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/server/requestAuth";
 import {
   getSnapshotPlaceholderTargetUrl,
+  getSnapshotPlaceholderTargetUrls,
   isSnapshotPlaceholderEnabled,
   resetSnapshotPlaceholder,
 } from "@/lib/server/snapshotPlaceholder";
@@ -16,6 +17,7 @@ export async function POST(req: NextRequest) {
       reset,
       placeholderModeEnabled: isSnapshotPlaceholderEnabled(),
       targetUrl: getSnapshotPlaceholderTargetUrl(),
+      targetUrls: getSnapshotPlaceholderTargetUrls(),
     });
   } catch (error) {
     return errorResponse(error);

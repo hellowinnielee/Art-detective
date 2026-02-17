@@ -8,6 +8,7 @@ const publicEnvSchema = z.object({
 const serverEnvSchema = publicEnvSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SNAPSHOT_PLACEHOLDER_TARGET_URL: z.url().optional(),
+  SNAPSHOT_PLACEHOLDER_TARGET_URLS: z.string().optional(),
 });
 
 function parseBoolean(value: string | undefined): boolean {
@@ -20,6 +21,7 @@ const parsed = serverEnvSchema.safeParse({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   SNAPSHOT_PLACEHOLDER_TARGET_URL: process.env.SNAPSHOT_PLACEHOLDER_TARGET_URL,
+  SNAPSHOT_PLACEHOLDER_TARGET_URLS: process.env.SNAPSHOT_PLACEHOLDER_TARGET_URLS,
 });
 
 if (!parsed.success) {
@@ -37,6 +39,7 @@ export const env = {
   SUPABASE_SERVICE_ROLE_KEY: parsed.success ? parsed.data.SUPABASE_SERVICE_ROLE_KEY : undefined,
   SNAPSHOT_PLACEHOLDER_MODE: parseBoolean(process.env.SNAPSHOT_PLACEHOLDER_MODE),
   SNAPSHOT_PLACEHOLDER_TARGET_URL: parsed.success ? parsed.data.SNAPSHOT_PLACEHOLDER_TARGET_URL : undefined,
+  SNAPSHOT_PLACEHOLDER_TARGET_URLS: parsed.success ? parsed.data.SNAPSHOT_PLACEHOLDER_TARGET_URLS : undefined,
   hasSupabasePublic: parsedPublic.success,
   hasSupabaseService: Boolean(parsed.success && parsed.data.SUPABASE_SERVICE_ROLE_KEY),
 };

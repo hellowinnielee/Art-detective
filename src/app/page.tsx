@@ -628,7 +628,6 @@ export default function Home() {
   async function runSnapshotForWatchlist(item: WatchlistItem) {
     const normalized = item.url?.trim();
     if (!normalized) return;
-    setTab("Detective");
     setDetectiveView("snapshot");
     setReportUrl(normalized);
     setReportSnapshot(null);
@@ -903,13 +902,10 @@ export default function Home() {
     <main className="frameRoot">
       <div className="phoneFrame">
         <div className={authed ? "content contentWithNav" : "content"}>
-          {!(authed && (tab === "Detective" || tab === "Dossier" || tab === "Profile" || tab === "Discover")) ? (
-            <h1 className="appTitle">Art Detective</h1>
-          ) : null}
-
           {!authed ? (
             <>
-              <section className="analyseTopBar" aria-label="Log in header">
+              <section className="analyseTopBar loginTopBar" aria-label="Log in header">
+                <h1 className="appTitle loginLogo">The Art Detective</h1>
                 <div className="analyseBadge">Log in</div>
               </section>
 
@@ -998,7 +994,7 @@ export default function Home() {
             </>
           ) : null}
 
-          {authed && tab === "Dossier" ? (
+          {authed && tab === "Dossier" && detectiveView === "home" ? (
             <>
               <section className="analyseTopBar" aria-label="Dossier header">
                 <div className="analyseBadge">Dossier</div>
@@ -1059,7 +1055,7 @@ export default function Home() {
             </>
           ) : null}
 
-          {authed && tab === "Detective" && detectiveView === "snapshot" ? (
+          {authed && detectiveView === "snapshot" && (tab === "Detective" || tab === "Dossier") ? (
             <>
               <section className="analyseTopBar snapshotTopBar" aria-label="Artwork report header">
                 <button
@@ -1159,7 +1155,6 @@ export default function Home() {
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Last Name"
                 />
-                <p className="profileHelper">Your profile and saved reports are stored locally on your device.</p>
                 <div className="profileDivider profileDividerBottom" aria-hidden="true" />
                 <button className="profileLogoutButton" type="button" onClick={logout}>
                   Log out
@@ -1169,7 +1164,7 @@ export default function Home() {
           ) : null}
 
           {error ? <p className="err">{error}</p> : null}
-          {undoDelete ? (
+          {tab === "Dossier" && undoDelete ? (
             <div className="undoToast" role="status" aria-live="polite">
               <p>Listing removed.</p>
               <button type="button" className="undoButton" onClick={undoDeleteListing}>
@@ -1217,9 +1212,7 @@ export default function Home() {
                 className={tab === item ? "tab active" : "tab"}
                 onClick={() => {
                   setTab(item);
-                  if (item !== "Detective") {
-                    setDetectiveView("home");
-                  }
+                  setDetectiveView("home");
                 }}
               >
                 <span className="tabIcon" aria-hidden="true">
