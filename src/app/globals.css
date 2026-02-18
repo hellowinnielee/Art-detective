@@ -8,28 +8,31 @@
 }
 
 :root {
-  --bg-0: #efe6d7;
-  --bg-1: #f9f0e1;
-  --surface-0: #f9f0e1;
+  --bg-0: #F4F1EA;
+  --bg-1: #F4F1EA;
+  --surface-0: #F4F1EA;
   --surface-1: #ffffff;
-  --surface-2: #f6ecdc;
-  --line-soft: rgba(0, 0, 0, 0.12);
-  --text-strong: #111111;
-  --text-main: #111111;
-  --text-sub: #494949;
-  --accent: #7d1919;
-  --accent-strong: #8f1e1e;
-  --ok: #22a379;
-  --warn: #9a6700;
-  --danger: #c33024;
+  --surface-2: #F4F1EA;
+  --line-soft: #e4ddd3;
+  --text-strong: #1a1a1a;
+  --text-main: #1a1a1a;
+  --text-sub: #5e5b57;
+  --accent: #ec5b13;
+  --accent-strong: #d45212;
+  --accent-active: #bc4910;
+  --accent-sheen: none;
+  --ok: #16a34a;
+  --warn: #ec5b13;
+  --danger: #d41111;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #dde1ea;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.4;
+  background: var(--bg-0);
   color: var(--text-main);
 }
 
@@ -40,7 +43,7 @@ body {
   justify-content: center;
   padding: 24px;
   overflow: auto;
-  background: #dde1ea;
+  background: var(--bg-0);
 }
 
 .phoneFrame {
@@ -94,7 +97,7 @@ body {
 .content {
   flex: 1;
   overflow: auto;
-  background: var(--surface-0);
+  background: var(--bg-0);
   border-radius: 48px;
   border: 1px solid #2b2c2f;
   padding: 108px 16px 16px;
@@ -120,25 +123,26 @@ h1 {
   font-size: 28px;
   font-weight: 700;
   margin: 0;
-  color: #111111;
+  color: #0f172a;
   letter-spacing: -0.02em;
 }
 
 .appTitle {
-  font-family: "Stardos Stencil", Georgia, "Times New Roman", Times, serif;
+  font-family: var(--font-stardos-stencil), Georgia, "Times New Roman", Times, serif;
   font-weight: 700;
 }
 
 h2 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
-  color: #111111;
+  color: #0f172a;
 }
 
 .sub {
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.35;
   margin: 0;
 }
 
@@ -167,26 +171,28 @@ h2 {
 input {
   height: 42px;
   border-radius: 10px;
-  border: 1px solid #000;
+  border: 1px solid #3b3631;
   padding: 0 12px;
   font-size: 14px;
   font-family: var(--font-courier-prime), "Courier Prime", "Courier New", Courier, monospace;
-  color: #e2c89c;
-  background: #000;
+  color: #F4F1EA;
+  background: #0f172a;
 }
 
 input::placeholder {
-  color: #e2c89c;
+  color: #F4F1EA;
 }
 
 input:focus-visible {
   outline: none;
-  border-color: #7d1919;
-  box-shadow: 0 0 0 2px rgba(125, 25, 25, 0.16);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(165, 90, 59, 0.24);
 }
 
 textarea {
   font-family: var(--font-courier-prime), "Courier Prime", "Courier New", Courier, monospace;
+  color: #F4F1EA;
+  background: #0f172a;
 }
 
 .listingInputRow {
@@ -207,9 +213,9 @@ textarea {
   height: 40px;
   min-width: 40px;
   border-radius: 999px;
-  border: 1px solid #2f2f2f;
-  background: #111;
-  color: #e2c89c;
+  border: 1px solid #3b3631;
+  background: #2a2724;
+  color: #F4F1EA;
   font-size: 14px;
   line-height: 1;
   padding: 0;
@@ -222,11 +228,11 @@ textarea {
 }
 
 .clearInputButton:hover {
-  background: #2b2b2b;
+  background: #35312d;
 }
 
 .clearInputButton:active {
-  background: #1f1f1f;
+  background: #262320;
   transform: translateY(-50%) scale(0.96);
 }
 
@@ -244,17 +250,17 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #922020;
+  background: var(--accent-strong);
 }
 
 button:active:not(:disabled) {
   transform: translateY(1px) scale(0.995);
-  background: #6f1515;
+  background: var(--accent-active);
 }
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #f9f0e1, 0 0 0 4px #7d1919;
+  box-shadow: 0 0 0 2px var(--surface-2), 0 0 0 4px var(--accent);
 }
 
 button:disabled {
@@ -275,37 +281,37 @@ button,
 }
 
 button.secondary {
-  background: #f9f0e1;
-  color: #111111;
-  border: 1px solid #7d1919;
+  background: var(--surface-2);
+  color: var(--text-strong);
+  border: 1px solid var(--accent);
   box-shadow: none;
 }
 
 button.secondary:hover:not(:disabled) {
-  background: #f1e4cf;
+  background: #ebe0d0;
 }
 
 button.secondary:active:not(:disabled) {
-  background: #eadabf;
-  border-color: #651111;
+  background: #e4d6c3;
+  border-color: var(--accent-strong);
 }
 
 button.savedStateButton,
 button.savedStateButton:active {
-  background: #f9f0e1;
-  border-color: #7d1919;
-  color: #7d1919;
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--accent);
   opacity: 0.7;
   transform: none;
 }
 
 button.savedStateButton:hover {
-  background: #f9f0e1;
+  background: var(--surface-2);
   opacity: 0.7;
 }
 
 button.savedStateButton:active {
-  background: #f9f0e1;
+  background: var(--surface-2);
   opacity: 0.7;
 }
 
@@ -316,39 +322,56 @@ button.savedStateButton:active {
 
 .analyseTopBar {
   margin: -108px -16px 0;
-  height: 112px;
-  background: #bd7c52;
+  height: 100px;
+  background: #ec5b13;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
   margin-bottom: 16px;
+  border-bottom: 1px solid rgba(28, 42, 58, 0.34);
+}
+
+.analyseTopBar::after {
+  content: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: none;
 }
 
 .loginTopBar {
-  height: 210px;
+  height: 200px;
+  background: #ec5b13;
+}
+
+.loginTopBar::after {
+  content: none;
+  background: none;
 }
 
 .analyseBadge {
   position: absolute;
   left: 0;
-  top: 56px;
+  top: 50px;
   height: 56px;
   width: 178px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  padding: 0 39px 12px;
-  background: #e2c89c;
-  color: #111;
-  font-family: "Stardos Stencil", Georgia, serif;
+  padding: 0 36px;
+  background: linear-gradient(180deg, #f8f2e8 0%, #ede0ce 100%);
+  color: var(--text-strong);
+  font-family: var(--font-stardos-stencil), Georgia, serif;
   font-size: 24px;
-  line-height: 23px;
+  line-height: 1.05;
   font-weight: 700;
-  box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(35, 28, 22, 0.14);
+  border-left: none;
+  box-shadow: 0 4px 10px rgba(35, 28, 22, 0.16);
 }
 
 .analyseBadge:not(.artworkReportBadge) {
-  padding-bottom: 16px;
+  padding-bottom: 0;
 }
 
 .loginTopBar .analyseBadge {
@@ -359,12 +382,12 @@ button.savedStateButton:active {
 .loginLogo {
   position: absolute;
   left: 50%;
-  top: 84px;
+  top: 72px;
   transform: translateX(-50%) rotate(-3deg);
   margin: 0;
   width: calc(100% - 24px);
   max-width: 360px;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1;
   letter-spacing: -0.01em;
   text-align: center;
@@ -372,43 +395,53 @@ button.savedStateButton:active {
 }
 
 .snapshotTopBar {
-  height: 112px;
+  height: 100px;
 }
 
 .artworkReportBadge {
-  top: 56px;
+  top: 50px;
   height: 56px;
   width: auto;
   max-width: min(100%, 400px);
   justify-content: flex-start;
-  padding: 0 39px 12px 70px;
-  font-size: 28px;
-  line-height: 23px;
+  padding: 0 34px 0 66px;
+  font-size: 24px;
+  line-height: 1.05;
   white-space: nowrap;
 }
 
 .snapshotBackIconButton {
   position: absolute;
   left: 18px;
-  top: 78px;
+  top: 50px;
+  height: 56px;
   z-index: 2;
   min-height: 0;
   padding: 0;
   border: none;
   background: transparent;
-  color: #111;
+  color: #0f172a;
   font-size: 24px;
   font-weight: 400;
   line-height: 1;
   box-shadow: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.snapshotBackIconButton img {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
 .snapshotBackIconButton:hover:not(:disabled),
 .snapshotBackIconButton:active:not(:disabled) {
   background: transparent;
-  color: #111;
+  color: #0f172a;
   transform: none;
+  opacity: 0.9;
 }
 
 .classifiedLabel {
@@ -416,10 +449,11 @@ button.savedStateButton:active {
   right: 16px;
   top: 11px;
   margin: 0;
-  color: #111;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  color: #f1f5fb;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .analyseInputCard {
@@ -437,25 +471,25 @@ button.savedStateButton:active {
 .analyseInputCard .listingInputRow input {
   height: 42px;
   border-radius: 4px;
-  border: 1px solid #000;
-  background: #000;
-  color: #e2c89c;
+  border: 1px solid #3b3631;
+  background: #0f172a;
+  color: #F4F1EA;
   font-family: "Courier Prime", "Courier New", monospace;
   font-size: 14px;
   line-height: 21px;
 }
 
 .analyseInputCard .listingInputRow input::placeholder {
-  color: #e2c89c;
+  color: #F4F1EA;
 }
 
 .analyseScanButton {
   width: 100%;
   height: 42px;
   border-radius: 4px;
-  background: #7d1919;
+  background: var(--accent);
   color: #fff;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
   font-weight: 700;
   font-size: 14px;
   line-height: 21px;
@@ -463,16 +497,16 @@ button.savedStateButton:active {
 
 .analyseScanButton:disabled {
   opacity: 1;
-  background: #7d1919;
+  background: var(--accent);
   color: rgba(255, 255, 255, 0.7);
 }
 
 .analyseScanButton:hover:not(:disabled) {
-  background: #922020;
+  background: var(--accent-strong);
 }
 
 .analyseScanButton:active:not(:disabled) {
-  background: #6f1515;
+  background: var(--accent-active);
 }
 
 .scanButtonLabel {
@@ -483,7 +517,7 @@ button.savedStateButton:active {
 }
 
 .savedReportsTitle {
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 20px;
   line-height: 22px;
   font-weight: 700;
@@ -501,16 +535,16 @@ button.savedStateButton:active {
 
 .profileTitle {
   margin: 0;
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 28px;
   line-height: 1.15;
   font-weight: 700;
   text-align: center;
-  color: #111;
+  color: #0f172a;
 }
 
 .profileDivider {
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(15, 23, 42, 0.2);
   margin: 10px 0 12px;
 }
 
@@ -530,12 +564,12 @@ button.savedStateButton:active {
 .profileInput {
   height: 46px;
   border: 1px solid #b4b1aa !important;
-  background: #fff !important;
-  color: #111 !important;
+  background: #0f172a !important;
+  color: #F4F1EA !important;
   padding: 0 14px;
   margin: 0 0 10px;
   border-radius: 12px !important;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
   font-size: 13px;
 }
 
@@ -548,6 +582,7 @@ button.savedStateButton:active {
   font-size: 12px;
   line-height: 1.25;
   color: #232323;
+  font-family: var(--font-special-elite-display), "Special Elite", "Courier New", Courier, monospace !important;
 }
 
 .profilePortraitWrap {
@@ -648,7 +683,7 @@ button.savedStateButton:active {
   position: absolute;
   left: 50%;
   bottom: 46px;
-  width: min(84%, 209px);
+  width: min(109.2%, 272px);
   height: auto;
   transform: translateX(calc(-32% + 75px)) rotate(-5deg);
   pointer-events: none;
@@ -657,9 +692,9 @@ button.savedStateButton:active {
 .profileIntelField {
   width: 100%;
   min-height: 42px;
-  background: #000;
-  color: #e2c89c;
-  border: 1px solid #000;
+  background: #2a2724;
+  color: #F4F1EA;
+  border: 1px solid #3b3631;
   padding: 0 12px;
   display: flex;
   align-items: center;
@@ -671,14 +706,14 @@ button.savedStateButton:active {
   font-family: "Courier Prime", "Courier New", Courier, monospace;
   font-size: 14px;
   line-height: 1.15;
-  color: #e2c89c;
+  color: #F4F1EA;
 }
 
 .profileIntelFieldLabel {
   font-family: "Courier Prime", "Courier New", Courier, monospace;
   font-size: 12px;
   line-height: 1.15;
-  color: #e2c89c;
+  color: #F4F1EA;
   text-align: right;
   white-space: nowrap;
 }
@@ -693,20 +728,20 @@ button.savedStateButton:active {
 .profileIntelInsightText {
   margin: 0;
   color: #1d1d1d;
-  font-size: 13px;
-  line-height: 1.35;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  font-family: var(--font-special-elite-display), "Special Elite", "Courier New", Courier, monospace !important;
 }
 
 .profileAiBeacon {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   isolation: isolate;
-  flex: 0 0 42px;
+  flex: 0 0 32px;
 }
 
 .profileAiBeacon > img {
@@ -795,7 +830,7 @@ button.savedStateButton:active {
   margin-top: 6px;
   border: none;
   background: transparent;
-  color: #7d1919;
+  color: var(--accent);
   box-shadow: none;
   font-size: 14px;
   font-weight: 500;
@@ -806,7 +841,7 @@ button.savedStateButton:active {
 .profileRulesLink:hover:not(:disabled),
 .profileRulesLink:active:not(:disabled) {
   background: transparent;
-  color: #8f1617;
+  color: var(--accent-strong);
   transform: none;
 }
 
@@ -819,11 +854,11 @@ button.savedStateButton:active {
   align-items: center;
   justify-content: center;
   line-height: 1.2;
-  background: #f9f0e1;
-  color: #7d1919;
-  border: 2px solid #7d1919;
+  background: var(--surface-2);
+  color: var(--accent);
+  border: 2px solid var(--accent);
   border-radius: 4px;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
   font-weight: 700;
   font-size: 14px;
   margin-top: 0;
@@ -832,21 +867,21 @@ button.savedStateButton:active {
 }
 
 button.otpButton:hover:not(:disabled) {
-  background: #e2c89c;
-  border-color: #7d1919;
+  background: rgba(236, 91, 19, 0.2);
+  border-color: var(--accent);
 }
 
 .otpButton:active {
-  background: #e8d7c0;
+  background: #e1d2bf;
 }
 
 .forgotText {
   margin: 16px 0 0;
   font-size: 13px;
   line-height: 1.4;
-  color: #7d1919;
+  color: var(--accent);
   text-align: center;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
 }
 
 .forgotLink {
@@ -854,7 +889,7 @@ button.otpButton:hover:not(:disabled) {
   border: none;
   padding: 0;
   margin: 0;
-  color: #7d1919;
+  color: var(--accent);
   font-size: inherit;
   font-family: inherit;
   font-weight: 600;
@@ -868,13 +903,13 @@ button.otpButton:hover:not(:disabled) {
 }
 
 .forgotLink:hover {
-  color: #8f1617;
+  color: var(--accent-strong);
   background: none;
   transform: none;
 }
 
 .forgotLink:active {
-  color: #6f1515;
+  color: var(--accent-strong);
   background: none;
   transform: none;
 }
@@ -915,6 +950,7 @@ button.otpButton:hover:not(:disabled) {
 .imgFallback {
   border-radius: 0;
   background: #151922;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   object-fit: cover;
   display: flex;
   align-items: center;
@@ -939,7 +975,7 @@ button.otpButton:hover:not(:disabled) {
   flex: 0 0 auto;
   max-width: none;
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(15, 23, 42, 0.12);
   color: #2c2c2c;
   padding: 16px;
   text-align: center;
@@ -947,14 +983,19 @@ button.otpButton:hover:not(:disabled) {
 
 .imgErrorMessage {
   margin: 0;
-  max-width: 260px;
+  max-width: none;
+  font-family: var(--font-special-elite-display), "Special Elite", "Courier New", Courier, monospace !important;
   font-size: 14px;
   line-height: 1.4;
 }
 
+.imgErrorMessage strong {
+  white-space: nowrap;
+}
+
 label {
   font-size: 12px;
-  color: #999fad;
+  color: #656d79;
   font-weight: 600;
 }
 
@@ -981,7 +1022,8 @@ label {
 
 .scoreSliderValue {
   margin: 0;
-  color: #111;
+  color: #0f172a;
+  font-family: var(--font-stardos-stencil), Georgia, serif;
   font-size: 20px;
   line-height: 1.1;
   font-weight: 700;
@@ -996,9 +1038,10 @@ label {
 
 .scoreSlider {
   position: relative;
-  height: 12px;
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 999px;
+  height: 16px;
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 0 !important;
+  box-shadow: none;
   cursor: default;
   user-select: none;
 }
@@ -1008,7 +1051,18 @@ label {
   left: 0;
   top: 0;
   bottom: 0;
-  border-radius: 999px;
+  border-radius: 0 !important;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.scoreSliderFill::after {
+  content: none !important;
+  display: none !important;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: none !important;
 }
 
 .scoreSliderFill.good {
@@ -1046,7 +1100,7 @@ label {
   margin: 0 0 12px;
   font-size: 14px;
   font-weight: 700;
-  color: #111;
+  color: #0f172a;
 }
 
 .snapshotPageHeader {
@@ -1075,13 +1129,13 @@ label {
   line-height: 1.1;
   font-weight: 700 !important;
   letter-spacing: 0.01em;
-  color: #111;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #0f172a;
+  font-family: var(--font-special-elite), Inter, "Helvetica Neue", Arial, sans-serif;
 }
 
 .snapshotDetailList {
   margin-top: 4px;
-  border-top: 2px solid #111;
+  border-top: 2px solid #0f172a;
 }
 
 .snapshotDetailRow {
@@ -1089,14 +1143,14 @@ label {
   align-items: baseline;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid #0f172a;
 }
 
 .snapshotDetailLabel {
   flex: 0 0 auto;
   font-size: 14px;
-  font-weight: 700;
-  color: #111;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .snapshotDetailValue {
@@ -1105,8 +1159,8 @@ label {
   align-items: center;
   min-width: 0;
   font-size: 14px;
-  font-weight: 500;
-  color: #111;
+  font-weight: 400;
+  color: #0f172a;
   word-break: break-word;
 }
 
@@ -1115,7 +1169,7 @@ label {
   width: 100%;
   min-height: 2px;
   height: 16px;
-  background: #000;
+  background: #0f172a;
   transform: translateY(2px);
 }
 
@@ -1142,7 +1196,7 @@ label {
   width: 100%;
   align-self: stretch;
   box-sizing: border-box;
-  background: #f9f0e1;
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1167,14 +1221,21 @@ label {
   stroke-linejoin: round;
 }
 
+.aiWarningIcon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .aiWarningText {
   margin: 0;
   flex: 1;
   min-width: 0;
-  font-size: 11px;
-  font-style: italic;
+  font-size: 13px;
+  font-style: normal;
   line-height: 1.25;
-  color: #111;
+  color: #0f172a;
+  font-family: var(--font-special-elite-display), "Special Elite", "Courier New", Courier, monospace !important;
 }
 
 @media (max-width: 640px) {
@@ -1191,10 +1252,10 @@ label {
 }
 
 .bucketCard {
-  border: 1px solid #111;
+  border: 1px solid #0f172a;
   border-radius: 0;
   padding: 10px;
-  background: #f9f0e1;
+  background: var(--surface-2);
   transition: border-color 140ms ease;
 }
 
@@ -1246,19 +1307,18 @@ label {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #111;
+  color: #0f172a;
 }
 
 .bucketChevron {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #111;
-  min-width: 12px;
-  font-size: 14px;
+  color: #0f172a;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
   line-height: 1;
-  font-weight: 400;
-  transform: translateY(-2px);
 }
 
 .bucketDetails {
@@ -1279,6 +1339,7 @@ label {
 
 .bucketMeta {
   margin: 4px 0 0;
+  padding: 4px 0;
   font-size: 11px;
   color: #333;
 }
@@ -1303,23 +1364,23 @@ label {
 
 .chipGood {
   font-weight: 700;
-  color: #111;
-  background: transparent;
+  color: #0f172a;
+  background: rgba(22, 163, 74, 0.1);
   border-color: var(--ok);
 }
 
 .chipReview {
   font-weight: 700;
-  color: #111;
-  background: transparent;
-  border-color: #ff0000;
+  color: #0f172a;
+  background: rgba(236, 91, 19, 0.1);
+  border-color: var(--warn);
 }
 
 .chipMissing {
   font-weight: 700;
-  color: #111;
-  background: transparent;
-  border-color: #ff0000;
+  color: #0f172a;
+  background: rgba(212, 17, 17, 0.1);
+  border-color: var(--danger);
 }
 
 .signalBlock {
@@ -1373,9 +1434,9 @@ label {
 
 .curatedTitle {
   margin: 0;
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 20px;
-  line-height: 0.92;
+  line-height: 0.98;
   letter-spacing: -0.01em;
   color: var(--text-strong);
 }
@@ -1396,9 +1457,17 @@ label {
 
 .sortButton svg,
 .curatedSortButton svg,
-.discoverFilterButton svg {
+.discoverFilterButton svg,
+.sortButton img,
+.curatedSortButton img,
+.discoverFilterButton img {
   width: 20px;
   height: 20px;
+}
+
+.sortButton svg,
+.curatedSortButton svg,
+.discoverFilterButton svg {
   stroke: currentColor;
   stroke-width: 1.8;
   fill: none;
@@ -1413,7 +1482,7 @@ label {
 
 .curatedArtworkCard {
   border: none;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   border-radius: 0;
   padding: 8px;
@@ -1441,10 +1510,10 @@ label {
 
 .curatedArtworkTitle {
   margin: 4px 0 0;
-  color: #111;
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  color: #0f172a;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 16px;
-  line-height: 1.08;
+  line-height: 1.14;
   font-weight: 700;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1455,8 +1524,8 @@ label {
 
 .curatedArtworkArtist {
   margin: 0;
-  color: #111;
-  font-size: 15px;
+  color: #0f172a;
+  font-size: 14px;
   line-height: 1.15;
   font-weight: 500;
   white-space: nowrap;
@@ -1513,9 +1582,9 @@ label {
 .discoverArtistsTitle {
   margin: 0;
   padding: 0 14px;
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 20px;
-  line-height: 0.92;
+  line-height: 0.98;
   letter-spacing: -0.01em;
   color: var(--text-strong);
 }
@@ -1552,7 +1621,7 @@ label {
 
 .discoverArtistCard {
   border: none;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   border-radius: 0;
   padding: 8px;
@@ -1580,10 +1649,10 @@ label {
 
 .discoverArtistName {
   margin: 0;
-  color: #111;
+  color: #0f172a;
   font-size: 14px;
-  line-height: 1.2;
-  font-weight: 500;
+  line-height: 1.3;
+  font-weight: 400;
 }
 
 .discoverFollowButton {
@@ -1591,31 +1660,38 @@ label {
   min-width: 116px;
   height: 32px;
   min-height: 32px;
-  padding: 0 16px;
+  padding: 1px 16px 0;
   border-radius: 999px !important;
   font-size: 14px;
-  line-height: 1.2;
+  line-height: 1;
   font-weight: 500;
   border: 1px solid transparent;
   box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .discoverFollowButton.isFollowed {
-  background: #BD7C52;
-  color: var(--surface-0);
-  border-color: #BD7C52;
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
 .discoverFollowButton.isUnfollowed {
   background: #F9F0E1;
-  color: var(--accent);
+  color: var(--accent-strong);
   border-color: #F9F0E1;
 }
 
-.discoverFollowButton.isFollowed:hover:not(:disabled),
+.discoverFollowButton.isFollowed:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
 .discoverFollowButton.isFollowed:active:not(:disabled) {
-  background: #BD7C52;
-  border-color: #BD7C52;
+  background: var(--accent-active);
+  border-color: var(--accent-active);
 }
 
 .discoverFollowButton.isUnfollowed:hover:not(:disabled),
@@ -1657,7 +1733,7 @@ button.tiny:active:not(:disabled) {
   gap: 12px;
   padding-top: 10px;
   margin-top: 10px;
-  border-top: 1px solid #111;
+  border-top: 1px solid #0f172a;
 }
 
 .discoverThumb,
@@ -1709,7 +1785,7 @@ button.tiny:active:not(:disabled) {
   width: 100%;
   border: none;
   background: transparent;
-  color: #000;
+  color: #0f172a;
   padding: 0;
   text-align: left;
   border-radius: 0;
@@ -1722,7 +1798,7 @@ button.tiny:active:not(:disabled) {
   align-items: flex-start;
   gap: 8px;
   border: none;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   border-radius: 0;
   padding: 8px;
@@ -1770,19 +1846,19 @@ button.tiny:active:not(:disabled) {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  color: #000;
+  color: #0f172a;
 }
 
 .lineItemButton .savedItemBody strong,
 .lineItemButton .savedItemBody p {
-  color: #000;
+  color: #0f172a;
   text-align: left;
 }
 
 .lineItemButton .savedItemBody strong {
-  font-family: "Stardos Stencil", Georgia, serif !important;
+  font-family: var(--font-stardos-stencil), Georgia, serif !important;
   font-size: 14px;
-  line-height: 1.08;
+  line-height: 1.14;
   font-weight: 700;
 }
 
@@ -1811,6 +1887,10 @@ button.tiny:active:not(:disabled) {
   font-size: 14px;
   line-height: 1;
   box-shadow: none;
+}
+
+.deleteListingIcon {
+  display: block;
 }
 
 .deleteListingButton:hover:not(:disabled) {
@@ -1844,8 +1924,8 @@ button.tiny:active:not(:disabled) {
 
 .undoButton {
   background: #fff;
-  border: 1px solid #7d1919;
-  color: #7d1919;
+  border: 1px solid var(--accent);
+  color: var(--accent);
   box-shadow: none;
   padding: 6px 10px;
 }
@@ -1915,14 +1995,29 @@ button.tiny:active:not(:disabled) {
 }
 
 .tabBar {
+  position: relative;
   display: flex;
   justify-content: center;
-  background: #e2c89c;
-  border: 1px solid #d4b88a;
+  background: #ece3d4;
+  border: 1px solid var(--line-soft);
   border-top: none;
   border-radius: 0 0 48px 48px;
   padding: 6px 8px 8px;
   gap: 24px;
+  overflow: hidden;
+}
+
+.tabBar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.08) 34%,
+    rgba(255, 255, 255, 0) 68%
+  );
 }
 
 .tab {
@@ -1968,7 +2063,8 @@ button.tiny:active:not(:disabled) {
 
 .tabLabel {
   font-size: 12px;
-  line-height: 1;
+  line-height: 1.1;
+  font-weight: 500;
 }
 
 .tab:hover:not(.active) {
@@ -1982,6 +2078,6 @@ button.tiny:active:not(:disabled) {
 
 .tab.active {
   background: transparent !important;
-  color: #7d1919;
+  color: var(--accent);
   font-weight: 700;
 }

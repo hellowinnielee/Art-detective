@@ -224,7 +224,7 @@ export async function buildSnapshotFromUrl(url: string): Promise<SnapshotRespons
   ];
   const priceChecks: SnapshotBucketCheck[] = [
     {
-      label: "Comparable listings/sales",
+      label: "Comparable listings",
       value: typeof price === "number" ? "Good" : "Missing evidence",
       detail: typeof price === "number" ? "Current listing includes a concrete price." : "No concrete listing price extracted.",
     },

@@ -371,6 +371,7 @@ const PROFILE_PHOTO_CANDIDATES = [
   "/profile/profile.jpg",
   "/artworks/kaws.jpg",
 ];
+const ICON_VERSION = "20260218b";
 
 function TabIcon({ tab, isActive }: { tab: Tab; isActive: boolean }) {
   const iconSrcByTab: Record<Tab, { inactive: string; active: string }> = {
@@ -379,22 +380,9 @@ function TabIcon({ tab, isActive }: { tab: Tab; isActive: boolean }) {
     Dossier: { inactive: "/icons/icon-dossier.svg", active: "/icons/icon-dossier-active.svg" },
     Profile: { inactive: "/icons/icon-profile.svg", active: "/icons/icon-profile-active.svg" },
   };
-  const src = isActive ? iconSrcByTab[tab].active : iconSrcByTab[tab].inactive;
+  const src = `${isActive ? iconSrcByTab[tab].active : iconSrcByTab[tab].inactive}?v=${ICON_VERSION}`;
 
   return <Image src={src} alt="" aria-hidden="true" width={20} height={20} />;
-}
-
-function ControlAdjustIcon() {
-  return (
-    <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
-      <line x1="4" y1="7" x2="20" y2="7" />
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <line x1="4" y1="17" x2="20" y2="17" />
-      <circle cx="9" cy="7" r="2" />
-      <circle cx="15" cy="12" r="2" />
-      <circle cx="11" cy="17" r="2" />
-    </svg>
-  );
 }
 
 function useDecryptTypewriter(
@@ -914,7 +902,7 @@ export default function Home() {
         {showAwkwardFallback ? (
           <div className="imgFallback imgErrorFallback">
             <p className="imgErrorMessage">
-              <strong>This is awkward… Intel unavailable.</strong>
+              Intel unavailable.
               <br />
               Our apologies, HQ is resolving the issue – you’ll be notified when data is recovered.
             </p>
@@ -988,7 +976,13 @@ export default function Home() {
                   <div className="bucketHeaderRight">
                     <span className={`statusChip ${statusClass(bucket.status)}`}>{bucket.status}</span>
                     <span className="bucketChevron" aria-hidden="true">
-                      {isExpanded ? "−" : "+"}
+                      <Image
+                        src={isExpanded ? "/icons/icon-remove.svg" : "/icons/icon-add.svg"}
+                        alt=""
+                        aria-hidden="true"
+                        width={16}
+                        height={16}
+                      />
                     </span>
                   </div>
                 </div>
@@ -1012,11 +1006,7 @@ export default function Home() {
 
       <aside className="aiWarning" aria-label="AI warning">
         <span className="aiWarningIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-            <path d="M12 2.4 5.2 5v5.3c0 4.6 2.8 8.9 6.8 10.3 4-1.4 6.8-5.7 6.8-10.3V5L12 2.4Z" />
-            <path d="M12 8.2v5.3" />
-            <circle cx="12" cy="16.3" r="0.8" />
-          </svg>
+          <Image src="/icons/icon-guard-orange.svg" alt="" aria-hidden="true" width={32} height={32} />
         </span>
         <p className="aiWarningText">
           Art Detective delivers AI-powered intel. Intelligence. Not infallible. Verify before you act.
@@ -1033,7 +1023,7 @@ export default function Home() {
         </button>
       ) : null}
       <button
-        className="analyseScanButton"
+        className="profileSignOffButton"
         onClick={() => window.open(activeUrl, "_blank")}
         disabled={!activeNormalizedUrl}
       >
@@ -1186,7 +1176,7 @@ export default function Home() {
                     <p className="curatedSubtitle">Based on the artists you follow</p>
                   </div>
                   <button type="button" className="sortButton curatedSortButton" aria-label="Sort curated artworks">
-                    <ControlAdjustIcon />
+                    <Image src="/icons/icon-sort.svg" alt="" aria-hidden="true" width={20} height={20} />
                     Sort
                   </button>
                 </div>
@@ -1231,7 +1221,7 @@ export default function Home() {
                 <div className="savedListMeta">
                   <p className="sub">{watchlist.length} Artwork{watchlist.length === 1 ? "" : "s"}</p>
                   <button type="button" className="sortButton" aria-label="Sort saved reports">
-                    <ControlAdjustIcon />
+                    <Image src="/icons/icon-sort.svg" alt="" aria-hidden="true" width={20} height={20} />
                     Sort
                   </button>
                 </div>
@@ -1274,7 +1264,18 @@ export default function Home() {
                         aria-label={`Delete saved listing ${item.title}`}
                         title="Delete listing"
                       >
-                        {deletingListingIds.includes(item.listingId) ? "…" : "×"}
+                        {deletingListingIds.includes(item.listingId) ? (
+                          "…"
+                        ) : (
+                          <Image
+                            src={`/icons/icon-close.svg?v=${ICON_VERSION}`}
+                            alt=""
+                            width={14}
+                            height={14}
+                            className="deleteListingIcon"
+                            aria-hidden
+                          />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -1295,7 +1296,7 @@ export default function Home() {
                   }}
                   aria-label="Back"
                 >
-                  ←
+                  <Image src="/icons/icon-left-arrow.svg" alt="" aria-hidden="true" width={24} height={24} />
                 </button>
                 <div className="analyseBadge artworkReportBadge">Artwork report</div>
               </section>
@@ -1339,7 +1340,7 @@ export default function Home() {
               <section className="card discoverArtistsCard">
                 <h2 className="discoverArtistsTitle">Artists</h2>
                 <button type="button" className="discoverFilterButton" aria-label="Filter artists">
-                  <ControlAdjustIcon />
+                  <Image src="/icons/icon-filter.svg" alt="" aria-hidden="true" width={20} height={20} />
                   Filter
                 </button>
                 {discoverCards.length === 0 ? <p className="sub">No artists found.</p> : null}
@@ -1398,7 +1399,7 @@ export default function Home() {
                     }
                   />
                   <Image
-                    src="/profile/confidential.svg"
+                    src="/profile/confidential-stamp.svg"
                     alt=""
                     aria-hidden="true"
                     width={209}
@@ -1422,7 +1423,7 @@ export default function Home() {
 
                 <div className="profileIntelInsightRow">
                   <span className="profileAiBeacon" aria-hidden="true">
-                    <Image src="/profile/AI-icon.svg" alt="" aria-hidden="true" width={42} height={42} />
+                    <Image src="/icons/icon-ai-orange.svg" alt="" aria-hidden="true" width={32} height={32} />
                   </span>
                   <p className="profileIntelInsightText">
                     We analyse your field data to curate a personalised art dossier.
