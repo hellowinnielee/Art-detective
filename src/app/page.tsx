@@ -67,6 +67,7 @@ type UndoDeleteState = {
 const SNAPSHOT_CACHE_KEY = "art_detective_snapshot_cache_v1";
 const LAST_ANALYSE_SNAPSHOT_KEY = "art_detective_last_analyse_snapshot_v1";
 const WATCHLIST_CACHE_KEY_PREFIX = "art_detective_watchlist_";
+const VIEW_STATE_KEY = "art_detective_view_state_v1";
 const MISSING_ARTWORK_DETAIL_VALUES = new Set([
   "not provided",
   "price not available",
@@ -75,6 +76,42 @@ const MISSING_ARTWORK_DETAIL_VALUES = new Set([
   "unknown",
   "n/a",
 ]);
+
+type PersistedViewState = {
+  tab: Tab;
+  detectiveView: DetectiveView;
+};
+
+function isTab(value: unknown): value is Tab {
+  return value === "Discover" || value === "Detective" || value === "Dossier" || value === "Profile";
+}
+
+function isDetectiveView(value: unknown): value is DetectiveView {
+  return value === "home" || value === "snapshot";
+}
+
+function readViewState(): PersistedViewState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(VIEW_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { tab?: unknown; detectiveView?: unknown };
+    if (!isTab(parsed.tab) || !isDetectiveView(parsed.detectiveView)) return null;
+    return { tab: parsed.tab, detectiveView: parsed.detectiveView };
+  } catch {
+    return null;
+  }
+}
+
+function writeViewState(state: PersistedViewState): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(VIEW_STATE_KEY, JSON.stringify(state));
+}
+
+function clearViewState(): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(VIEW_STATE_KEY);
+}
 
 function formatArtistName(input: string): string {
   return input
@@ -321,6 +358,16 @@ function writeWatchlistCache(email: string, items: WatchlistItem[]) {
   window.localStorage.setItem(key, JSON.stringify(items));
 }
 
+const PROFILE_PHOTO_CANDIDATES = [
+  "/profile/profile-shot.png",
+  "/profile/profile_shot.png",
+  "/profile/profile-shot.jpg",
+  "/profile/profile_shot.jpg",
+  "/profile/profile.png",
+  "/profile/profile.jpg",
+  "/artworks/kaws.jpg",
+];
+
 function TabIcon({ tab }: { tab: Tab }) {
   if (tab === "Discover") {
     return (
@@ -355,6 +402,65 @@ function TabIcon({ tab }: { tab: Tab }) {
   );
 }
 
+function ControlAdjustIcon() {
+  return (
+    <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="20" y2="17" />
+      <circle cx="9" cy="7" r="2" />
+      <circle cx="15" cy="12" r="2" />
+      <circle cx="11" cy="17" r="2" />
+    </svg>
+  );
+}
+
+function useDecryptTypewriter(
+  target: string,
+  active: boolean,
+  options?: { tickMs?: number; maxJitter?: number },
+): string {
+  const tickMs = options?.tickMs ?? 34;
+  const maxJitter = options?.maxJitter ?? 2;
+  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&*";
+  const [value, setValue] = useState(active ? "" : target);
+
+  useEffect(() => {
+    if (!active) {
+      setValue(target);
+      return;
+    }
+
+    let frame = 0;
+    const timer = window.setInterval(() => {
+      frame += 1;
+
+      const settledCount = Math.min(target.length, Math.floor(frame / 2));
+      const next = target
+        .split("")
+        .map((char, index) => {
+          if (index < settledCount) return char;
+          if (char === " ") return " ";
+          const jitter = Math.max(0, maxJitter - Math.floor(frame / 10));
+          if (Math.random() < 0.06 * jitter) return char;
+          return charset[Math.floor(Math.random() * charset.length)];
+        })
+        .join("");
+
+      setValue(next);
+
+      if (settledCount >= target.length) {
+        window.clearInterval(timer);
+        setValue(target);
+      }
+    }, tickMs);
+
+    return () => window.clearInterval(timer);
+  }, [active, maxJitter, target, tickMs]);
+
+  return value;
+}
+
 export default function Home() {
   const [tab, setTab] = useState<Tab>("Detective");
   const [detectiveView, setDetectiveView] = useState<DetectiveView>("home");
@@ -375,6 +481,7 @@ export default function Home() {
   const [savedListingUrl, setSavedListingUrl] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [profilePhotoIndex, setProfilePhotoIndex] = useState(0);
   const [cachedSnapshotAt, setCachedSnapshotAt] = useState<string | null>(null);
   const [reportCachedSnapshotAt, setReportCachedSnapshotAt] = useState<string | null>(null);
   const [lastAnalyseSnapshotKey, setLastAnalyseSnapshotKey] = useState("");
@@ -387,6 +494,11 @@ export default function Home() {
   useEffect(() => {
     const session = getSession();
     if (session) {
+      const savedViewState = readViewState();
+      if (savedViewState) {
+        setTab(savedViewState.tab);
+        setDetectiveView(savedViewState.detectiveView);
+      }
       setAuthed(true);
       setEmail(session.email);
       setWatchlist(readWatchlistCache(session.email));
@@ -425,6 +537,11 @@ export default function Home() {
     if (!authed) return;
     setLastAnalyseSnapshotKey(readLastAnalyseSnapshotKey());
   }, [authed]);
+
+  useEffect(() => {
+    if (!authed) return;
+    writeViewState({ tab, detectiveView });
+  }, [authed, tab, detectiveView]);
 
   useEffect(() => {
     if (!undoDelete) return;
@@ -569,6 +686,7 @@ export default function Home() {
       }).catch(() => undefined);
     }
     clearSession();
+    clearViewState();
     setAuthed(false);
     setDetectiveView("home");
     setSnapshot(null);
@@ -783,6 +901,7 @@ export default function Home() {
     Boolean(activeSnapshot) &&
     (isInterruptionText(activeSnapshot?.artworkOverview.artistName) ||
       isInterruptionText(activeSnapshot?.artworkOverview.title));
+  const confidenceRatingText = showAwkwardFallback ? "Unknown" : `${clampedSnapshotScore}%`;
 
   function viewLastSnapshot() {
     if (!lastAnalyseSnapshotKey || !lastAnalyseSnapshot) return;
@@ -802,7 +921,9 @@ export default function Home() {
         {showAwkwardFallback ? (
           <div className="imgFallback imgErrorFallback">
             <p className="imgErrorMessage">
-              Well, this is awkward… Intel unavailable. Our apologies, HQ is resolving the issue, stand by.
+              <strong>This is awkward… Intel unavailable.</strong>
+              <br />
+              Our apologies, HQ is resolving the issue – you’ll be notified when data is recovered.
             </p>
           </div>
         ) : (
@@ -842,7 +963,7 @@ export default function Home() {
         ))}
       </div>
       <div className="scoreSliderBlock" role="group" aria-label="Confidence score, read-only">
-        <p className="scoreSliderValue">Confidence rating: {clampedSnapshotScore}%</p>
+        <p className="scoreSliderValue">Confidence rating: {confidenceRatingText}</p>
         <p className="scoreSliderCaption">Calculated from listing signals</p>
         <div className="scoreSlider" aria-hidden="true">
           <div className={`scoreSliderFill ${scoreClass}`} style={{ width: `${clampedSnapshotScore}%` }} />
@@ -909,13 +1030,15 @@ export default function Home() {
         </p>
       </aside>
 
-      <button
-        className={`otpButton snapshotSaveButton ${isCurrentListingSaved ? "savedStateButton" : ""}`}
-        onClick={() => saveListing(activeUrl, detectiveView !== "snapshot")}
-        disabled={!activeNormalizedUrl || loadingSnapshot || savingListing || isCurrentListingSaved}
-      >
-        {saveButtonLabel}
-      </button>
+      {!showAwkwardFallback ? (
+        <button
+          className={`otpButton snapshotSaveButton ${isCurrentListingSaved ? "savedStateButton" : ""}`}
+          onClick={() => saveListing(activeUrl, detectiveView !== "snapshot")}
+          disabled={!activeNormalizedUrl || loadingSnapshot || savingListing || isCurrentListingSaved}
+        >
+          {saveButtonLabel}
+        </button>
+      ) : null}
       <button
         className="analyseScanButton"
         onClick={() => window.open(activeUrl, "_blank")}
@@ -950,8 +1073,20 @@ export default function Home() {
           </div>
         ))}
       </div>
+      <div className="scoreSliderBlock" role="group" aria-label="Confidence score unavailable">
+        <p className="scoreSliderValue">Confidence rating: Unknown</p>
+      </div>
     </>
   );
+
+  const profileIntelActive = authed && tab === "Profile";
+  const loginPromptActive = !authed;
+  const emailPlaceholder = useDecryptTypewriter("Name or Email", loginPromptActive, { tickMs: 30, maxJitter: 2 });
+  const accessCodePlaceholder = useDecryptTypewriter("Access code", loginPromptActive, { tickMs: 34, maxJitter: 2 });
+  const accessIdValue = useDecryptTypewriter("Alex Smith", profileIntelActive);
+  const locationValue = useDecryptTypewriter("London, UK", profileIntelActive);
+  const artworkBudgetValue = useDecryptTypewriter("£5,000", profileIntelActive);
+  const profilePhotoSrc = PROFILE_PHOTO_CANDIDATES[Math.min(profilePhotoIndex, PROFILE_PHOTO_CANDIDATES.length - 1)];
 
   return (
     <main className="frameRoot">
@@ -959,7 +1094,7 @@ export default function Home() {
         <div className={authed ? "content contentWithNav" : "content"}>
           {!authed ? (
             <>
-              <section className="analyseTopBar loginTopBar" aria-label="Log in header">
+              <section className="analyseTopBar loginTopBar" aria-label="Initiate access header">
                 <h1 className="appTitle loginLogo">The Art Detective</h1>
                 <div className="analyseBadge">Log in</div>
               </section>
@@ -968,22 +1103,22 @@ export default function Home() {
                 <input 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
-                  placeholder="Name or Email" 
+                  placeholder={emailPlaceholder} 
                   autoComplete="username"
                 />
                 <input 
                   type="password"
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)} 
-                  placeholder="Password"
+                  placeholder={accessCodePlaceholder}
                   autoComplete="current-password"
                 />
                 <div className="row">
-                  <button className="analyseScanButton" type="submit">Log in</button>
+                  <button className="analyseScanButton" type="submit">Initiate access</button>
                 </div>
-                <button type="button" className="otpButton">Send one-time passcode</button>
+                <button type="button" className="otpButton">Clearance scan (Face ID)</button>
                 <p className="forgotText">
-                  Forgot your <button type="button" className="forgotLink">username</button> or <button type="button" className="forgotLink">password</button>?
+                  Forgot your <button type="button" className="forgotLink">access credentials</button>?
                 </p>
               </form>
             </>
@@ -1012,6 +1147,10 @@ export default function Home() {
                     <button
                       type="button"
                       className="clearInputButton"
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        clearListingField();
+                      }}
                       onClick={clearListingField}
                       aria-label="Clear listing URL"
                     >
@@ -1041,6 +1180,12 @@ export default function Home() {
                   ) : null}
                 </div>
               </section>
+              {shouldShowInlineReport || shouldShowInlineErrorReport ? (
+                <section className="card">
+                  <h2 className="savedReportsTitle">Artwork report</h2>
+                  {shouldShowInlineErrorReport ? artworkErrorCard : artworkReportCard}
+                </section>
+              ) : null}
               <section className="card curatedSectionCard" aria-label="Curated artworks">
                 <div className="curatedHeader">
                   <div className="curatedHeadingGroup">
@@ -1048,14 +1193,7 @@ export default function Home() {
                     <p className="curatedSubtitle">Based on the artists you follow</p>
                   </div>
                   <button type="button" className="sortButton curatedSortButton" aria-label="Sort curated artworks">
-                    <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
-                      <line x1="4" y1="7" x2="20" y2="7" />
-                      <line x1="4" y1="12" x2="20" y2="12" />
-                      <line x1="4" y1="17" x2="20" y2="17" />
-                      <circle cx="9" cy="7" r="2" />
-                      <circle cx="15" cy="12" r="2" />
-                      <circle cx="11" cy="17" r="2" />
-                    </svg>
+                    <ControlAdjustIcon />
                     Sort
                   </button>
                 </div>
@@ -1087,11 +1225,6 @@ export default function Home() {
                   ))}
                 </div>
               </section>
-              {shouldShowInlineReport || shouldShowInlineErrorReport ? (
-                <section className="card">
-                  {shouldShowInlineErrorReport ? artworkErrorCard : artworkReportCard}
-                </section>
-              ) : null}
             </>
           ) : null}
 
@@ -1105,7 +1238,8 @@ export default function Home() {
                 <div className="savedListMeta">
                   <p className="sub">{watchlist.length} Artwork{watchlist.length === 1 ? "" : "s"}</p>
                   <button type="button" className="sortButton" aria-label="Sort saved reports">
-                    <span aria-hidden="true">☷</span> Sort
+                    <ControlAdjustIcon />
+                    Sort
                   </button>
                 </div>
                 {watchlist.length === 0 ? <p className="sub">No saved listings yet.</p> : null}
@@ -1196,6 +1330,10 @@ export default function Home() {
                     <button
                       type="button"
                       className="clearInputButton"
+                      onPointerDown={(event) => {
+                        event.preventDefault();
+                        setArtistInput("");
+                      }}
                       onClick={() => setArtistInput("")}
                       aria-label="Clear artist search"
                     >
@@ -1208,14 +1346,7 @@ export default function Home() {
               <section className="card discoverArtistsCard">
                 <h2 className="discoverArtistsTitle">Artists</h2>
                 <button type="button" className="discoverFilterButton" aria-label="Filter artists">
-                  <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true">
-                    <line x1="4" y1="7" x2="20" y2="7" />
-                    <line x1="4" y1="12" x2="20" y2="12" />
-                    <line x1="4" y1="17" x2="20" y2="17" />
-                    <circle cx="9" cy="7" r="2" />
-                    <circle cx="15" cy="12" r="2" />
-                    <circle cx="11" cy="17" r="2" />
-                  </svg>
+                  <ControlAdjustIcon />
                   Filter
                 </button>
                 {discoverCards.length === 0 ? <p className="sub">No artists found.</p> : null}
@@ -1259,20 +1390,59 @@ export default function Home() {
                 <div className="analyseBadge">Profile</div>
               </section>
 
-              <section className="card analyseInputCard">
-                <input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="First Name"
-                />
-                <input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Last Name"
-                />
-                <div className="profileDivider profileDividerBottom" aria-hidden="true" />
-                <button className="profileLogoutButton" type="button" onClick={logout}>
-                  Log out
+              <section className="card analyseInputCard profileIntelCard">
+                <div className="profileIntelPortraitWrap">
+                  <Image
+                    src={profilePhotoSrc}
+                    alt="Agent profile photo"
+                    width={140}
+                    height={180}
+                    className="profileIntelPortrait"
+                    onError={() =>
+                      setProfilePhotoIndex((current) =>
+                        Math.min(current + 1, PROFILE_PHOTO_CANDIDATES.length - 1),
+                      )
+                    }
+                  />
+                  <Image
+                    src="/profile/confidential.svg"
+                    alt=""
+                    aria-hidden="true"
+                    width={209}
+                    height={56}
+                    className="profileIntelStamp"
+                  />
+                </div>
+
+                <div className="profileIntelField">
+                  <span className="profileIntelFieldValue">{accessIdValue}</span>
+                  <span className="profileIntelFieldLabel">Access ID</span>
+                </div>
+                <div className="profileIntelField">
+                  <span className="profileIntelFieldValue">{locationValue}</span>
+                  <span className="profileIntelFieldLabel">Location</span>
+                </div>
+                <div className="profileIntelField">
+                  <span className="profileIntelFieldValue">{artworkBudgetValue}</span>
+                  <span className="profileIntelFieldLabel">Artwork budget</span>
+                </div>
+
+                <div className="profileIntelInsightRow">
+                  <span className="profileAiBeacon" aria-hidden="true">
+                    <span className="profileAiBeaconPulse" />
+                    <span className="profileAiBeaconRing" />
+                    <Image src="/profile/AI-icon.svg" alt="" aria-hidden="true" width={42} height={42} />
+                  </span>
+                  <p className="profileIntelInsightText">
+                    We analyse your field data to recommend a personalised dossier of targets.
+                  </p>
+                </div>
+
+                <button className="profileSignOffButton" type="button" onClick={logout}>
+                  Sign off
+                </button>
+                <button className="profileRulesLink" type="button">
+                  Rules of Engagement (T&amp;Cs)
                 </button>
               </section>
             </>

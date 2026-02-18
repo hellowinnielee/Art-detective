@@ -195,17 +195,17 @@ textarea {
 
 .listingInputRow input {
   width: 100%;
-  padding-right: 52px;
+  padding-right: 58px;
 }
 
 .clearInputButton {
   position: absolute;
-  right: 8px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 999px;
   border: 1px solid #2f2f2f;
   background: #111;
@@ -217,6 +217,7 @@ textarea {
   align-items: center;
   justify-content: center;
   touch-action: manipulation;
+  z-index: 2;
   transition: background-color 120ms ease, transform 100ms ease;
 }
 
@@ -344,6 +345,10 @@ button.savedStateButton:active {
   line-height: 23px;
   font-weight: 700;
   box-shadow: 2px -2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.analyseBadge:not(.artworkReportBadge) {
+  padding-bottom: 16px;
 }
 
 .loginTopBar .analyseBadge {
@@ -479,7 +484,7 @@ button.savedStateButton:active {
 
 .savedReportsTitle {
   font-family: "Stardos Stencil", Georgia, serif !important;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 22px;
   font-weight: 700;
 }
@@ -597,10 +602,182 @@ button.savedStateButton:active {
   transform: none;
 }
 
+.profileIntelCard {
+  gap: 16px;
+}
+
+.profileIntelPortraitWrap {
+  position: relative;
+  margin: 0 0 4px;
+  align-self: flex-start;
+  width: min(100%, 150px);
+}
+
+.profileIntelPortrait {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: none;
+  box-shadow: none;
+}
+
+.profileIntelStamp {
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  width: min(84%, 209px);
+  height: auto;
+  transform: translateX(calc(-32% + 75px)) rotate(-5deg);
+  pointer-events: none;
+}
+
+.profileIntelField {
+  width: 100%;
+  min-height: 42px;
+  background: #000;
+  color: #e2c89c;
+  border: 1px solid #000;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profileIntelFieldValue {
+  font-family: "Courier Prime", "Courier New", Courier, monospace;
+  font-size: 14px;
+  line-height: 1.15;
+  color: #e2c89c;
+}
+
+.profileIntelFieldLabel {
+  font-family: "Courier Prime", "Courier New", Courier, monospace;
+  font-size: 12px;
+  line-height: 1.15;
+  color: #e2c89c;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.profileIntelInsightRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.profileIntelInsightText {
+  margin: 0;
+  color: #1d1d1d;
+  font-size: 13px;
+  line-height: 1.35;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.profileAiBeacon {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  flex: 0 0 42px;
+}
+
+.profileAiBeacon > img {
+  position: relative;
+  z-index: 3;
+}
+
+.profileAiBeaconPulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(125, 25, 25, 0.22) 0%, rgba(125, 25, 25, 0) 68%);
+  opacity: 0.32;
+  z-index: 1;
+  animation: aiBeaconPulse 2.6s ease-out infinite;
+}
+
+.profileAiBeaconRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px dashed rgba(125, 25, 25, 0.42);
+  opacity: 0.5;
+  z-index: 2;
+  animation: aiBeaconSpin 2.8s linear infinite;
+}
+
+@keyframes aiBeaconPulse {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.26;
+  }
+  55% {
+    transform: scale(1.1);
+    opacity: 0.14;
+  }
+  100% {
+    transform: scale(1.26);
+    opacity: 0;
+  }
+}
+
+@keyframes aiBeaconSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profileAiBeaconPulse,
+  .profileAiBeaconRing {
+    animation: none;
+  }
+}
+
+.profileSignOffButton {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.profileRulesLink {
+  width: 100%;
+  min-height: auto;
+  padding: 0;
+  margin-top: 6px;
+  border: none;
+  background: transparent;
+  color: #7d1919;
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profileRulesLink:hover:not(:disabled),
+.profileRulesLink:active:not(:disabled) {
+  background: transparent;
+  color: #8f1617;
+  transform: none;
+}
+
 /* Sign in page additional elements */
 .otpButton {
   width: 100%;
   height: 42px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
   background: #f9f0e1;
   color: #7d1919;
   border: 2px solid #7d1919;
@@ -671,9 +848,13 @@ button.otpButton:hover:not(:disabled) {
   background: transparent;
   color: #303030;
   border: none;
-  padding: 0;
+  padding: 2px 0;
   font-weight: 500;
   font-size: 14px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   box-shadow: none;
 }
 
@@ -691,7 +872,7 @@ button.otpButton:hover:not(:disabled) {
 
 .carousel img,
 .imgFallback {
-  border-radius: 10px;
+  border-radius: 0;
   background: #151922;
   object-fit: cover;
   display: flex;
@@ -716,6 +897,7 @@ button.otpButton:hover:not(:disabled) {
   min-height: 200px;
   flex: 0 0 auto;
   max-width: none;
+  border-radius: 0;
   background: rgba(0, 0, 0, 0.12);
   color: #2c2c2c;
   padding: 16px;
@@ -1151,7 +1333,7 @@ label {
 .curatedTitle {
   margin: 0;
   font-family: "Stardos Stencil", Georgia, serif !important;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 0.92;
   letter-spacing: -0.01em;
   color: var(--text-strong);
@@ -1168,17 +1350,14 @@ label {
 .curatedSortButton {
   width: fit-content;
   margin-top: 2px;
-  padding: 2px 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 14px;
 }
 
-.curatedSortButton svg {
-  width: 24px;
-  height: 24px;
+.sortButton svg,
+.curatedSortButton svg,
+.discoverFilterButton svg {
+  width: 20px;
+  height: 20px;
   stroke: currentColor;
   stroke-width: 1.8;
   fill: none;
@@ -1194,6 +1373,7 @@ label {
 .curatedArtworkCard {
   border: 1px solid rgba(17, 17, 17, 0.52);
   background: var(--surface-0);
+  border-radius: 0;
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -1204,7 +1384,7 @@ label {
 .curatedArtworkImageFallback {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 8px;
+  border-radius: 0;
   object-fit: cover;
   background: #dcd5c8;
 }
@@ -1292,7 +1472,7 @@ label {
   margin: 0;
   padding: 0 14px;
   font-family: "Stardos Stencil", Georgia, serif !important;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 0.92;
   letter-spacing: -0.01em;
   color: var(--text-strong);
@@ -1306,20 +1486,12 @@ label {
   border: none;
   box-shadow: none;
   color: #2f2f2f;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.2;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.discoverFilterButton svg {
-  width: 24px;
-  height: 24px;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  fill: none;
 }
 
 .discoverFilterButton:hover:not(:disabled),
@@ -1339,6 +1511,7 @@ label {
 .discoverArtistCard {
   border: 1px solid rgba(17, 17, 17, 0.52);
   background: var(--surface-0);
+  border-radius: 0;
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -1349,7 +1522,7 @@ label {
 .discoverArtistImageFallback {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 8px;
+  border-radius: 0;
   object-fit: cover;
   background: #dcd5c8;
 }
@@ -1373,7 +1546,7 @@ label {
 .discoverFollowButton {
   width: fit-content;
   min-width: 116px;
-  min-height: 40px;
+  min-height: 32px;
   padding: 0 22px;
   border-radius: 999px !important;
   font-size: 14px;
@@ -1522,7 +1695,7 @@ button.tiny:active:not(:disabled) {
 .savedThumbFallback {
   width: 130px;
   height: 130px;
-  border-radius: 4px;
+  border-radius: 0;
   background: #e9e9e9;
   object-fit: cover;
   flex: 0 0 auto;

@@ -104,7 +104,7 @@ export const CURATED_ARTWORKS_MOCK_ITEMS: CuratedArtworkItem[] = [
     source: "Perrotin",
     price: 2400,
     currency: "GBP",
-    imageUrl: "/artists/artist-aiweiwei.jpg",
+    imageUrl: "/artworks/aiweiwei.jpg",
     isAvailable: true,
   },
   {
@@ -114,7 +114,7 @@ export const CURATED_ARTWORKS_MOCK_ITEMS: CuratedArtworkItem[] = [
     source: "Ebay",
     price: 12000,
     currency: "GBP",
-    imageUrl: "/artworks/kaws.jpg",
+    imageUrl: "/artworks/kaws.jpg?v=20260218",
     isAvailable: true,
   },
 ];
