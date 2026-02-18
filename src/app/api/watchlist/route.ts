@@ -5,6 +5,10 @@ import { buildSnapshotFromUrl } from "@/lib/server/snapshot";
 import { parseJsonBody, errorResponse } from "@/lib/server/validation";
 import { urlPayloadSchema } from "@/lib/server/schemas";
 
+function stripMarketplaceSuffix(value: string): string {
+  return value.replace(/\s*\|\s*eBay.*$/i, "").trim();
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { userId } = getAuthUser(req);
@@ -23,7 +27,7 @@ export async function POST(req: NextRequest) {
       listingId: snap.snapshot.listingId,
       url,
       source: snap.source,
-      title: snap.artworkOverview.title || "Untitled listing",
+      title: stripMarketplaceSuffix(snap.artworkOverview.title || "Untitled listing"),
       thumbnailUrl: snap.artworkOverview.imageUrls[0],
       price: snap.artworkOverview.price,
       currency: snap.artworkOverview.currency,

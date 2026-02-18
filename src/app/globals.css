@@ -1371,8 +1371,9 @@ label {
 }
 
 .curatedArtworkCard {
-  border: 1px solid rgba(17, 17, 17, 0.52);
-  background: var(--surface-0);
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   border-radius: 0;
   padding: 8px;
   display: flex;
@@ -1509,8 +1510,9 @@ label {
 }
 
 .discoverArtistCard {
-  border: 1px solid rgba(17, 17, 17, 0.52);
-  background: var(--surface-0);
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   border-radius: 0;
   padding: 8px;
   display: flex;
@@ -1563,9 +1565,9 @@ label {
 }
 
 .discoverFollowButton.isUnfollowed {
-  background: #fff;
+  background: #F9F0E1;
   color: var(--accent);
-  border-color: #fff;
+  border-color: #F9F0E1;
 }
 
 .discoverFollowButton.isFollowed:hover:not(:disabled),
@@ -1576,8 +1578,8 @@ label {
 
 .discoverFollowButton.isUnfollowed:hover:not(:disabled),
 .discoverFollowButton.isUnfollowed:active:not(:disabled) {
-  background: #fff;
-  border-color: #fff;
+  background: #F9F0E1;
+  border-color: #F9F0E1;
 }
 
 .followRow {
@@ -1646,8 +1648,13 @@ button.tiny:active:not(:disabled) {
 }
 
 .lineItem {
-  padding: 13px 0 12px;
-  border-top: 1px solid #111;
+  padding: 0;
+  border-top: none;
+  margin: 0 0 8px;
+}
+
+.lineItem:last-child {
+  margin-bottom: 0;
 }
 
 .lineItem p {
@@ -1672,6 +1679,11 @@ button.tiny:active:not(:disabled) {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  border-radius: 0;
+  padding: 8px;
 }
 
 .lineItemButton:hover:not(:disabled) {
@@ -1726,14 +1738,19 @@ button.tiny:active:not(:disabled) {
 }
 
 .lineItemButton .savedItemBody strong {
+  font-family: "Stardos Stencil", Georgia, serif !important;
   font-size: 14px;
-  line-height: 130%;
-  font-weight: 600;
+  line-height: 1.08;
+  font-weight: 700;
+}
+
+.lineItemButton .savedItemBody p {
+  font-weight: 400;
 }
 
 .lineItemButton .savedItemBody .savedItemPrice {
-  font-weight: 700;
-  line-height: 140%;
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 .deleteListingButton {

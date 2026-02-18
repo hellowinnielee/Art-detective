@@ -142,6 +142,10 @@ function decodeHtmlEntities(value: string): string {
     .replace(/&gt;/g, ">");
 }
 
+function stripMarketplaceSuffix(value: string): string {
+  return value.replace(/\s*\|\s*eBay.*$/i, "").trim();
+}
+
 function formatSourceLabel(source: string): string {
   const trimmed = decodeHtmlEntities(source).trim();
   if (!trimmed) return "Unknown source";
@@ -584,7 +588,7 @@ export default function Home() {
   const artworkDetailRows = activeSnapshot
     ? [
         { label: "Artist", value: decodeHtmlEntities(activeSnapshot.artworkOverview.artistName) },
-        { label: "Title", value: decodeHtmlEntities(activeSnapshot.artworkOverview.title) },
+        { label: "Title", value: decodeHtmlEntities(stripMarketplaceSuffix(activeSnapshot.artworkOverview.title)) },
         { label: "Size", value: decodeHtmlEntities(activeSnapshot.artworkOverview.dimensions) },
         {
           label: "Price",
@@ -1267,7 +1271,7 @@ export default function Home() {
                             <div className="savedThumbFallback">No image</div>
                           )}
                           <div className="savedItemBody">
-                            <strong>{decodeHtmlEntities(item.title)}</strong>
+                            <strong>{decodeHtmlEntities(stripMarketplaceSuffix(item.title))}</strong>
                             <p>{formatSourceLabel(item.source)}</p>
                             <p className="savedItemPrice">{formatPrice(item.price, item.currency)}</p>
                           </div>

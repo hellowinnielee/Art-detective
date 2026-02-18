@@ -163,18 +163,23 @@ function inferArtistName(title: string): string {
   return looksLikeArtistName(fallback) ? fallback : "Unknown artist";
 }
 
+function stripMarketplaceSuffix(value: string): string {
+  return value.replace(/\s*\|\s*eBay.*$/i, "").trim();
+}
+
 export async function buildSnapshotFromUrl(url: string): Promise<SnapshotResponseBody> {
   const raw = await fetchListingHtml(url);
   const searchable = raw.toLowerCase();
   const jsonLd = extractFromJsonLd(raw);
   const titleMatch = raw.match(/<title>([^<]+)<\/title>/i);
   const ogTitle = extractMetaContent(raw, "og:title");
-  const title = (
+  const titleCandidate = (
     jsonLd.title ||
     ogTitle ||
-    titleMatch?.[1]?.replace(/\s*\|\s*eBay.*$/i, "").trim() ||
+    titleMatch?.[1] ||
     "Untitled listing"
   ).trim();
+  const title = stripMarketplaceSuffix(titleCandidate) || "Untitled listing";
   const priceJsonMatch = raw.match(/"price"\s*:\s*"?(\d+(?:\.\d+)?)"?/i);
   const priceDollarMatch = raw.match(/\$([0-9,]+(?:\.\d+)?)/);
   const price = typeof jsonLd.price === "number" && Number.isFinite(jsonLd.price)
