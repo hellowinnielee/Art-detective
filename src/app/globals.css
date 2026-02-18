@@ -903,13 +903,13 @@ button.otpButton:hover:not(:disabled) {
 }
 
 .forgotLink:hover {
-  color: var(--accent-strong);
+  color: #0F172A;
   background: none;
   transform: none;
 }
 
 .forgotLink:active {
-  color: var(--accent-strong);
+  color: var(--accent);
   background: none;
   transform: none;
 }
