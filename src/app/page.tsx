@@ -372,38 +372,16 @@ const PROFILE_PHOTO_CANDIDATES = [
   "/artworks/kaws.jpg",
 ];
 
-function TabIcon({ tab }: { tab: Tab }) {
-  if (tab === "Discover") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M14.8 9.2l-2.1 5.6-5.6 2.1 2.1-5.6z" />
-      </svg>
-    );
-  }
-  if (tab === "Detective") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="11" r="6.5" />
-        <path d="M16 16l4 4" />
-      </svg>
-    );
-  }
-  if (tab === "Dossier") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="4" y="7" width="16" height="12" rx="2" ry="2" />
-        <path d="M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7" />
-        <path d="M4 12h16" />
-      </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="8.2" r="3.4" />
-      <path d="M5 19c1.7-3.2 4-4.8 7-4.8s5.3 1.6 7 4.8" />
-    </svg>
-  );
+function TabIcon({ tab, isActive }: { tab: Tab; isActive: boolean }) {
+  const iconSrcByTab: Record<Tab, { inactive: string; active: string }> = {
+    Discover: { inactive: "/icons/icon-discover.svg", active: "/icons/icon-discover-active.svg" },
+    Detective: { inactive: "/icons/icon-analyse.svg", active: "/icons/icon-analyse-active.svg" },
+    Dossier: { inactive: "/icons/icon-dossier.svg", active: "/icons/icon-dossier-active.svg" },
+    Profile: { inactive: "/icons/icon-profile.svg", active: "/icons/icon-profile-active.svg" },
+  };
+  const src = isActive ? iconSrcByTab[tab].active : iconSrcByTab[tab].inactive;
+
+  return <Image src={src} alt="" aria-hidden="true" width={20} height={20} />;
 }
 
 function ControlAdjustIcon() {
@@ -494,6 +472,7 @@ export default function Home() {
   const [undoDelete, setUndoDelete] = useState<UndoDeleteState | null>(null);
   const [pendingDeleteItem, setPendingDeleteItem] = useState<WatchlistItem | null>(null);
   const [expandedBucketKey, setExpandedBucketKey] = useState<string | null>(null);
+  const [profileSweepActive, setProfileSweepActive] = useState(false);
 
   useEffect(() => {
     const session = getSession();
@@ -546,6 +525,16 @@ export default function Home() {
     if (!authed) return;
     writeViewState({ tab, detectiveView });
   }, [authed, tab, detectiveView]);
+
+  useEffect(() => {
+    if (!authed || tab !== "Profile") {
+      setProfileSweepActive(false);
+      return;
+    }
+    setProfileSweepActive(true);
+    const timer = window.setTimeout(() => setProfileSweepActive(false), 900);
+    return () => window.clearTimeout(timer);
+  }, [authed, tab]);
 
   useEffect(() => {
     if (!undoDelete) return;
@@ -1395,7 +1384,7 @@ export default function Home() {
               </section>
 
               <section className="card analyseInputCard profileIntelCard">
-                <div className="profileIntelPortraitWrap">
+                <div className={`profileIntelPortraitWrap${profileSweepActive ? " isScanning" : ""}`}>
                   <Image
                     src={profilePhotoSrc}
                     alt="Agent profile photo"
@@ -1433,12 +1422,10 @@ export default function Home() {
 
                 <div className="profileIntelInsightRow">
                   <span className="profileAiBeacon" aria-hidden="true">
-                    <span className="profileAiBeaconPulse" />
-                    <span className="profileAiBeaconRing" />
                     <Image src="/profile/AI-icon.svg" alt="" aria-hidden="true" width={42} height={42} />
                   </span>
                   <p className="profileIntelInsightText">
-                    We analyse your field data to recommend a personalised dossier of targets.
+                    We analyse your field data to curate a personalised art dossier.
                   </p>
                 </div>
 
@@ -1505,7 +1492,7 @@ export default function Home() {
                 }}
               >
                 <span className="tabIcon" aria-hidden="true">
-                  <TabIcon tab={item} />
+                  <TabIcon tab={item} isActive={tab === item} />
                 </span>
                 <span className="tabLabel">{item === "Detective" ? "Analyse" : item}</span>
               </button>

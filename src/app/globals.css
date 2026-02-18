@@ -613,6 +613,29 @@ button.savedStateButton:active {
   width: min(100%, 150px);
 }
 
+.profileIntelPortraitWrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18%;
+  top: -24%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.24) 46%,
+    rgba(255, 255, 255, 0.34) 54%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  mix-blend-mode: screen;
+}
+
+.profileIntelPortraitWrap.isScanning::after {
+  animation: profileSweepOnce 0.85s ease-out 1 forwards;
+}
+
 .profileIntelPortrait {
   width: 100%;
   height: auto;
@@ -735,9 +758,27 @@ button.savedStateButton:active {
   }
 }
 
+@keyframes profileSweepOnce {
+  0% {
+    top: -24%;
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.84;
+  }
+  84% {
+    opacity: 0.56;
+  }
+  100% {
+    top: 108%;
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .profileAiBeaconPulse,
-  .profileAiBeaconRing {
+  .profileAiBeaconRing,
+  .profileIntelPortraitWrap.isScanning::after {
     animation: none;
   }
 }
@@ -1548,8 +1589,9 @@ label {
 .discoverFollowButton {
   width: fit-content;
   min-width: 116px;
+  height: 32px;
   min-height: 32px;
-  padding: 0 22px;
+  padding: 0 16px;
   border-radius: 999px !important;
   font-size: 14px;
   line-height: 1.2;
@@ -1559,9 +1601,9 @@ label {
 }
 
 .discoverFollowButton.isFollowed {
-  background: var(--accent);
+  background: #BD7C52;
   color: var(--surface-0);
-  border-color: var(--accent);
+  border-color: #BD7C52;
 }
 
 .discoverFollowButton.isUnfollowed {
@@ -1572,8 +1614,8 @@ label {
 
 .discoverFollowButton.isFollowed:hover:not(:disabled),
 .discoverFollowButton.isFollowed:active:not(:disabled) {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
+  background: #BD7C52;
+  border-color: #BD7C52;
 }
 
 .discoverFollowButton.isUnfollowed:hover:not(:disabled),
