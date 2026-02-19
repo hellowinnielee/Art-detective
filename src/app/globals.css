@@ -948,9 +948,10 @@ button.otpButton:hover:not(:disabled) {
 
 .carousel img,
 .imgFallback {
+  border: 1px solid var(--Border-Bold, #0F172A);
   border-radius: 0;
   background: #151922;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 3px 3px 0 0 #0F172A;
   object-fit: cover;
   display: flex;
   align-items: center;
@@ -1481,9 +1482,9 @@ label {
 }
 
 .curatedArtworkCard {
-  border: none;
+  border: 1px solid var(--Border-Bold, #0F172A);
   background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 3px 3px 0 0 #0F172A;
   border-radius: 0;
   padding: 8px;
   display: flex;
@@ -1620,9 +1621,9 @@ label {
 }
 
 .discoverArtistCard {
-  border: none;
+  border: 1px solid var(--Border-Bold, #0F172A);
   background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 3px 3px 0 0 #0F172A;
   border-radius: 0;
   padding: 8px;
   display: flex;
@@ -1797,9 +1798,9 @@ button.tiny:active:not(:disabled) {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  border: none;
+  border: 1px solid var(--Border-Bold, #0F172A);
   background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 3px 3px 0 0 #0F172A;
   border-radius: 0;
   padding: 8px;
 }
@@ -1947,7 +1948,7 @@ button.tiny:active:not(:disabled) {
   max-width: 320px;
   background: #fff;
   border: 1px solid #e2e6f4;
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 14px;
   box-shadow: 0 8px 24px rgba(20, 24, 44, 0.2);
   display: flex;
@@ -1957,13 +1958,16 @@ button.tiny:active:not(:disabled) {
 
 .modalCard h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-stardos-stencil), Georgia, serif;
 }
 
 .modalCard p {
   margin: 0;
   color: #42485f;
   font-size: 13px;
+  font-family: Inter, "Helvetica Neue", Arial, sans-serif;
 }
 
 .modalActions {
