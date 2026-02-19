@@ -1031,7 +1031,12 @@ export default function Home() {
       </button>
     </>
   ) : (
-    <p className="sub">Building snapshot...</p>
+    <div className="reportSkeleton" aria-label="Building snapshot" aria-live="polite">
+      <div className="reportSkeletonImage shimmer" />
+      <div className="reportSkeletonLine shimmer" />
+      <div className="reportSkeletonLine shimmer" />
+      <div className="reportSkeletonLine short shimmer" />
+    </div>
   );
 
   const artworkErrorCard = (

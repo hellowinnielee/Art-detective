@@ -994,6 +994,60 @@ button.otpButton:hover:not(:disabled) {
   white-space: nowrap;
 }
 
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.28) 48%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmerSweep 1.2s ease-in-out infinite;
+}
+
+.reportSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reportSkeletonImage {
+  width: 300px;
+  height: 200px;
+  background: #151922;
+  border: 1px solid var(--Border-Bold, #0F172A);
+  box-shadow: 3px 3px 0 0 #0F172A;
+}
+
+.reportSkeletonLine {
+  height: 16px;
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.reportSkeletonLine.short {
+  width: 48%;
+}
+
+@keyframes shimmerSweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after {
+    animation: none;
+  }
+}
+
 label {
   font-size: 12px;
   color: #656d79;
@@ -1253,15 +1307,17 @@ label {
 }
 
 .bucketCard {
-  border: 1px solid #0f172a;
+  border: 1px solid var(--Border-Bold, #0F172A);
+  box-shadow: 3px 3px 0 0 #0F172A;
   border-radius: 0;
   padding: 10px;
   background: var(--surface-2);
-  transition: border-color 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .bucketCard:hover {
   border-color: var(--accent);
+  box-shadow: 3px 3px 0 0 var(--accent);
 }
 
 .bucketCard:hover .bucketHeader p {
@@ -1490,6 +1546,12 @@ label {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.curatedArtworkCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 0 var(--accent);
 }
 
 .curatedArtworkImage,
@@ -1629,6 +1691,12 @@ label {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.discoverArtistCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 0 var(--accent);
 }
 
 .discoverArtistImage,
@@ -1803,11 +1871,18 @@ button.tiny:active:not(:disabled) {
   box-shadow: 3px 3px 0 0 #0F172A;
   border-radius: 0;
   padding: 8px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
 .lineItemButton:hover:not(:disabled) {
   background: transparent;
   opacity: 0.8;
+}
+
+.savedItemContainer:has(.lineItemButton:hover:not(:disabled)),
+.savedItemContainer:hover {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 0 var(--accent);
 }
 
 .lineItemButton:active:not(:disabled) {
